@@ -98,7 +98,7 @@ namespace GUIPanels
       // handle mouse events
       var mousePosition = Utils.MousePosition();
       var sliderRect = Rect;
-      if (sliderRect.Contains(mousePosition) && Utils.GetMouseButton())
+      if (sliderRect.Contains(mousePosition) && Utils.GetMouseDown())
       {
         _mouseDown = true;
       }

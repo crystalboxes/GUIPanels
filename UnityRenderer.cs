@@ -17,6 +17,14 @@ namespace GUIPanels
     {
       return Input.GetMouseButton(0);
     }
+    public static bool GetMouseDown()
+    {
+      return Input.GetMouseButtonDown(0);
+    }
+    public static bool GetMouseUp()
+    {
+      return Input.GetMouseButtonUp(0);
+    }
     public static Col ToCol(Color col)
     {
       return new Col(col.r, col.g, col.b, col.a);
@@ -38,7 +46,7 @@ namespace GUIPanels
       public GUIStyle GUIStyle { get { return _style; } }
       public UnityStyle()
       {
-        _style = GUIStyle.none;
+        _style = new GUIStyle(GUIStyle.none);
       }
 
       public override float FontSize

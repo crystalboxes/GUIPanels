@@ -2,143 +2,110 @@ namespace GUIPanels
 {
   public class ParameterGroup : BasePanel, IParameter
   {
-    public float Height
+    string _name;
+
+    protected override string Name
     {
-      get
-      {
-        throw new System.NotImplementedException();
-      }
+      get { return _name; }
     }
 
-    public BasePanel Owner
+    public ParameterGroup(string name = "")
     {
-      get { throw new System.NotImplementedException(); }
-      set
-      {
-        throw new System.NotImplementedException();
-      }
+      _name = name;
+    }
+
+    public override float Width
+    {
+      get { return Owner.Width; }
+    }
+
+    public float Height
+    {
+      get { return _totalHeight; }
+    }
+
+    Vec2 _pos;
+
+    public override Vec2 Position
+    {
+      get { return new Vec2(Owner.Position.x, _pos.y); }
+      set { _pos = value; }
+    }
+
+    public BasePanel Owner { get; set; }
+
+    public override Style Style
+    {
+      get { return Owner.Style; }
+      set { }
     }
 
     public override float TextSize
     {
-      get
-      {
-        throw new System.NotImplementedException();
-      }
+      get { return Owner.TextSize; }
     }
 
     public override Col TextColor
     {
-      get
-      {
-        throw new System.NotImplementedException();
-      }
+      get { return Owner.TextColor; }
     }
 
     public override float PaddingLine
     {
-      get
-      {
-        throw new System.NotImplementedException();
-      }
-    }
-
-    protected override float Width
-    {
-      get
-      {
-        throw new System.NotImplementedException();
-      }
+      get { return Owner.PaddingLine; }
     }
 
     protected override float HeaderHeight
     {
-      get
-      {
-        throw new System.NotImplementedException();
-      }
+      get { return 15f; }
     }
 
     protected override float HeaderOffset
     {
-      get
-      {
-        throw new System.NotImplementedException();
-      }
-    }
-
-    protected override float StartY
-    {
-      get
-      {
-        throw new System.NotImplementedException();
-      }
+      get { return 1f; }
     }
 
     protected override float PaddingX
     {
-      get
-      {
-        throw new System.NotImplementedException();
-      }
+      get { return 3; }
     }
 
     protected override float PaddingY
     {
-      get
-      {
-        throw new System.NotImplementedException();
-      }
+      get { return 10f; }
     }
 
     protected override float PaddingTop
     {
-      get
-      {
-        throw new System.NotImplementedException();
-      }
+      get { return 4f; }
     }
 
     float IParameter.Width
     {
-      get
-      {
-        throw new System.NotImplementedException();
-      }
-
-      set
-      {
-        throw new System.NotImplementedException();
-      }
-    }
-
-    Vec2 IParameter.Position
-    {
-      get { throw new System.NotImplementedException(); }
-      set
-      {
-        throw new System.NotImplementedException();
-      }
+      get { return this.Width; }
+      set { }
     }
 
     public void Repaint()
     {
-      throw new System.NotImplementedException();
+      base.Draw();
     }
 
     public void UpdateStyle()
     {
-      throw new System.NotImplementedException();
+      foreach (var param in _parameters)
+      {
+        param.UpdateStyle();
+      }
     }
 
-    protected override void DrawHeader()
+    protected override Col HeaderTextColor
     {
-      throw new System.NotImplementedException();
+      get { return Col.white; }
     }
 
     protected override void DrawWindowBox()
     {
-      throw new System.NotImplementedException();
     }
   }
 }

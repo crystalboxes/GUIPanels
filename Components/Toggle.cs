@@ -57,15 +57,15 @@ namespace GUIPanels
 
 
       // draw box and then text
-      Renderer.Current.DrawRect(r, PrimaryColor);
+      Rendering.DrawRect(r, PrimaryColor);
 
       if (_value)
       {
-        Renderer.Current.DrawRect(ToggleCheckedBoxRect, SecondaryColor);
+        Rendering.DrawRect(ToggleCheckedBoxRect, SecondaryColor);
       }
       r.x += TextOffset + r.width;
       r.width = Width - r.width;
-      Renderer.Current.DrawText(r, _title, Owner.Style);
+      Rendering.DrawText(r, _title, Owner.Style);
     }
 
     public override void UpdateStyle()

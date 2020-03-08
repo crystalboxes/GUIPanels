@@ -119,11 +119,11 @@ namespace GUIPanels
 
     void Draw()
     {
-      Renderer.Current.DrawText(TextRect, string.Format("{0}: {1:0.00}",
+      Rendering.DrawText(TextRect, string.Format("{0}: {1:0.00}",
       _name, _value), _style);
       var sliderRect = SliderRect;
-      Renderer.Current.DrawRect(sliderRect, SliderColorFill);
-      Renderer.Current.DrawRect(new Rectangle(sliderRect.x, sliderRect.y,
+      Rendering.DrawRect(sliderRect, SliderColorFill);
+      Rendering.DrawRect(new Rectangle(sliderRect.x, sliderRect.y,
         _value / (_max - _min) * sliderRect.width, sliderRect.height),
         SliderColorActive);
     }

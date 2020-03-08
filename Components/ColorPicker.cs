@@ -145,13 +145,13 @@ namespace GUIPanels
     void DrawTransparentRectangle(Rectangle rect, float borderWidth)
     {
       var handleColor = _settings.HandleColor;
-      Renderer.Current.DrawRect(new Rectangle(rect.x, rect.y, rect.width, borderWidth),
+      Rendering.DrawRect(new Rectangle(rect.x, rect.y, rect.width, borderWidth),
       handleColor);
-      Renderer.Current.DrawRect(new Rectangle(rect.x, rect.y, borderWidth, rect.height),
+      Rendering.DrawRect(new Rectangle(rect.x, rect.y, borderWidth, rect.height),
       handleColor);
-      Renderer.Current.DrawRect(new Rectangle(rect.x, rect.y + rect.height - borderWidth, rect.width, borderWidth),
+      Rendering.DrawRect(new Rectangle(rect.x, rect.y + rect.height - borderWidth, rect.width, borderWidth),
        handleColor);
-      Renderer.Current.DrawRect(new Rectangle(rect.x + rect.width - borderWidth, rect.y, borderWidth, rect.height),
+      Rendering.DrawRect(new Rectangle(rect.x + rect.width - borderWidth, rect.y, borderWidth, rect.height),
        handleColor);
     }
 
@@ -172,10 +172,9 @@ namespace GUIPanels
       }
 
       // Draw text with color
-      var r = Renderer.Current;
       if (_collapsed)
       {
-        r.DrawRect(textRect, _value);
+        Rendering.DrawRect(textRect, _value);
       }
       if (_collapseTextStyle == null)
       {
@@ -183,12 +182,12 @@ namespace GUIPanels
         _collapseTextStyle.FontColor = Col.white;
         _collapseTextStyle.FontSize = collapseButtonPaddingAmount * textRect.height;
       }
-      r.DrawText(Utils.GetCollapseButtonRect(Position, textRect.height,
+      Rendering.DrawText(Utils.GetCollapseButtonRect(Position, textRect.height,
         collapseButtonPaddingAmount, Owner.TextSize, textRect.width), Utils.GetCollapseButtonText(_collapsed), _collapseTextStyle);
 
       textRect.y += TextBoxPadding;
       textRect.x += _paddingX;
-      r.DrawText(textRect, _name, Owner.Style);
+      Rendering.DrawText(textRect, _name, Owner.Style);
 
       if (_collapsed)
       {
@@ -226,9 +225,8 @@ namespace GUIPanels
     {
       var pickerRect = new Rectangle(pos.x + DisplayColorWidth, pos.y, Width - DisplayColorWidth, s.PickerHeight);
 
-      var r = Renderer.Current;
-      r.DrawTexture(new Rectangle(pos.x, pos.y, DisplayColorWidth, s.PickerHeight), _displayTexture);
-      r.DrawTexture(pickerRect, _pickingTexture);
+      Rendering.DrawTexture(new Rectangle(pos.x, pos.y, DisplayColorWidth, s.PickerHeight), _displayTexture);
+      Rendering.DrawTexture(pickerRect, _pickingTexture);
 
       {
         var rect = new Rectangle(pickerRect.x + HSV.y * pickerRect.width, pos.y + (1 - HSV.z) * s.PickerHeight,
@@ -260,7 +258,7 @@ namespace GUIPanels
 
       pos.y += s.HueSliderVerticalOffset + s.PickerHeight;
       var hueSliderRect = new Rectangle(pos.x, pos.y, Width, s.HueSliderHeight);
-      r.DrawTexture(hueSliderRect, _hueTexture);
+      Rendering.DrawTexture(hueSliderRect, _hueTexture);
       {
         var rect = new Rectangle(pos.x + HSV.x * Width, pos.y,
         s.HueSliderHandleWidth, s.HueSliderHeight);

@@ -59,7 +59,6 @@ namespace GUIPanels.Unity
       DrawCircleCommands(p0, halfWidth, color);
       DrawCircleCommands(p1, halfWidth, color);
 
-
       GL.Vertex3(start0.x, start0.y, 0);
       GL.Vertex3(end0.x, end0.y, 0);
       GL.Vertex3(end1.x, end1.y, 0);
@@ -70,7 +69,7 @@ namespace GUIPanels.Unity
 
       GL.End();
     }
-    public override void DrawArc(Vec2 center, float radius, float startAngle, float endAngle, float width, Col color)
+    public override void DrawArc(Vec2 center, float radius, float startAngle, float endAngle, Col color)
     {
 
     }
@@ -105,10 +104,54 @@ namespace GUIPanels.Unity
     }
     public override void DrawRing(Vec2 center, float radius, float innerRadius, Col color)
     {
-
+      DrawArcRing(center, radius, innerRadius, 0, 360, color);
     }
+    const float DEG2RAD = 0.0174533f;
     public override void DrawArcRing(Vec2 center, float radius, float innerRadius, float startAngle, float endAngle, Col color)
     {
+      var ct = Aspect.Adjust(center);
+      var r = Aspect.Adjust(radius);
+      var ri = Aspect.Adjust(innerRadius);
+
+      if (ri < float.Epsilon)
+      {
+        DrawArc(center, radius, startAngle, endAngle, color);
+        return;
+      }
+
+      // Make sure that inner radius is smaller than the main radius
+      if (ri > r)
+      {
+        ri = r - (ri - r);
+      }
+
+      RenderMaterial.SetPass(0);
+      GL.Begin(GL.TRIANGLES);
+      GL.Color(color);
+
+      float angle = startAngle * DEG2RAD;
+      endAngle = endAngle * DEG2RAD;
+
+      float twopi = 2f * (float)System.Math.PI;
+      float incr = twopi / (float)CircleResolution;
+      while (angle < twopi)
+      {
+        float s = (float)System.Math.Sin(angle);
+        float c = (float)System.Math.Cos(angle);
+        float si = (float)System.Math.Sin(angle + incr);
+        float ci = (float)System.Math.Cos(angle + incr);
+
+        GL.Vertex3(ct.x + s * r, ct.y + c * r, 0);
+        GL.Vertex3(ct.x + si * r, ct.y + ci * r, 0);
+        GL.Vertex3(ct.x + s * ri, ct.y + c * ri, 0);
+
+        GL.Vertex3(ct.x + s * ri, ct.y + c * ri, 0);
+        GL.Vertex3(ct.x + si * r, ct.y + ci * r, 0);
+        GL.Vertex3(ct.x + si * ri, ct.y + ci * ri, 0);
+
+        angle += incr;
+      }
+      GL.End();
 
     }
 
@@ -118,7 +161,6 @@ namespace GUIPanels.Unity
       RenderMaterial.SetPass(0);
       // Draw lines
       GL.Begin(GL.TRIANGLES);
-      //
       GL.Color(color);
       GL.Vertex3(rectangle.x, rectangle.y, 0);
       GL.Vertex3(rectangle.x + rectangle.width, rectangle.y, 0);

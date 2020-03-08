@@ -147,7 +147,7 @@ namespace GUIPanels
 
     protected override void DrawWindowBox()
     {
-      Renderer.Current.DrawRect(WindowBoxRect, _settings.BackgroundColor);
+      Rendering.DrawRect(WindowBoxRect, _settings.BackgroundColor);
     }
 
 

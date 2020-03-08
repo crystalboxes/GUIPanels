@@ -81,18 +81,18 @@ namespace GUIPanels
     protected void DrawCollapsedButton()
     {
       var collapsedButtonRect = CollapsedButtonRect;
-      Renderer.Current.DrawText(collapsedButtonRect, _collapsed ? "[+]" : "[ - ]", CollapsedButtonStyle);
+      Rendering.DrawText(collapsedButtonRect, _collapsed ? "[+]" : "[ - ]", CollapsedButtonStyle);
     }
 
     protected virtual void DrawHeader()
     {
-      Renderer.Current.DrawRect(HeaderRect, HeaderColor);
+      Rendering.DrawRect(HeaderRect, HeaderColor);
 
       var collapsedButtonRect = CollapsedButtonRect;
       DrawCollapsedButton();
       if (Name.Length <= 0) return;
       collapsedButtonRect.x = Position.x + PaddingX;
-      Renderer.Current.DrawText(collapsedButtonRect, Name, CollapsedButtonStyle);
+      Rendering.DrawText(collapsedButtonRect, Name, CollapsedButtonStyle);
     }
 
 

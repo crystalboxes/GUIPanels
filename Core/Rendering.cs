@@ -20,7 +20,7 @@ namespace GUIPanels
     }
     public static void DrawArc(Vec2 center, float radius, float startAngle, float endAngle, float width, Col color)
     {
-      Renderer.Current.DrawArc(center, radius, startAngle, endAngle, width, color);
+      Renderer.Current.DrawArc(center, radius, startAngle, endAngle, color);
     }
     public static void DrawCircle(Vec2 center, float radius, Col color)
     {
@@ -39,7 +39,7 @@ namespace GUIPanels
   {
     public int CircleResolution = 20;
     public abstract void DrawLine(Vec2 p0, Vec2 p1, float width, Col color);
-    public abstract void DrawArc(Vec2 center, float radius, float startAngle, float endAngle, float width, Col color);
+    public abstract void DrawArc(Vec2 center, float radius, float startAngle, float endAngle, Col color);
     public abstract void DrawCircle(Vec2 center, float radius, Col color);
     public abstract void DrawRing(Vec2 center, float radius, float innerRadius, Col color);
     public abstract void DrawArcRing(Vec2 center, float radius, float innerRadius, float startAngle, float endAngle, Col color);

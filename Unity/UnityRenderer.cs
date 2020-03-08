@@ -118,51 +118,11 @@ namespace GUIPanels
         }
       }
     }
-    public class Renderer : GUIPanels.Renderer
+    public partial class Renderer : GUIPanels.Renderer
     {
       public override void DrawTexture(Rectangle rectangle, Texture texture)
       {
         GUI.DrawTexture(Utils.ToRect(rectangle), (texture as UnityTexture).Tex);
-      }
-
-      class RectTexture
-      {
-        public Texture2D GetTexture(Color col)
-        {
-          if (_currentColor != col)
-          {
-            _currentColor = col;
-            _texture.SetPixel(0, 0, _currentColor);
-            _texture.Apply();
-          }
-          return _texture;
-        }
-        Texture2D _texture;
-        Color _currentColor;
-        public RectTexture()
-        {
-          _currentColor = Color.white;
-          _texture = new Texture2D(1, 1);
-          _texture.SetPixel(0, 0, _currentColor);
-          _texture.Apply();
-        }
-      }
-      static RectTexture _rectTexture = null;
-      static RectTexture RectTex
-      {
-        get
-        {
-          if (_rectTexture == null)
-          {
-            _rectTexture = new RectTexture();
-          }
-          return _rectTexture;
-        }
-      }
-
-      public override void DrawRect(Rectangle rectangle, Col color)
-      {
-        GUI.DrawTexture(Utils.ToRect(rectangle), RectTex.GetTexture(Utils.FromCol(color)));
       }
 
       public override void DrawText(Rectangle rectangle, string text, Style style)

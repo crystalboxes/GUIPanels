@@ -6,7 +6,6 @@ namespace GUIPanels
   public abstract class BasePanel
   {
     public virtual Vec2 Position { get; set; }
-
     public virtual void Add(IParameter param)
     {
       _parameters.Add(param);
@@ -32,7 +31,6 @@ namespace GUIPanels
     {
       get { return new Rectangle(Position.x, Position.y + WindowBoxStartY, Width, WindowBoxHeight); }
     }
-
     protected float _totalHeight = 0;
     protected List<IParameter> _parameters = new List<IParameter>();
     protected float UpdateParametersCoordinates(float x, float y)

@@ -7,7 +7,6 @@ namespace GUIPanels
   }
   public static partial class Utils
   {
-
     public static Rectangle GetCollapseButtonRect(Vec2 pos, float headerHeight, float paddingAmount, float textSize, float width)
     {
       float size = headerHeight * paddingAmount;
@@ -39,6 +38,12 @@ namespace GUIPanels
     }
     public static float Adjust(float a) { return Scale * a; }
     public static float UnAdjust(float scaled) { return scaled / Scale; }
+    public static Vec2 Adjust(Vec2 a) { 
+      return new Vec2(Scale * a.x, Scale * a.y); 
+    }
+    public static Vec2 UnAdjust(Vec2 scaled) { 
+      return new Vec2(scaled.x / Scale, scaled.y / Scale); 
+    }
 
     public delegate void OnScaleChangeDelegate();
     public static OnScaleChangeDelegate OnScaleChange = new OnScaleChangeDelegate(() => { });
@@ -84,6 +89,17 @@ namespace GUIPanels
       this.x = x;
       this.y = y;
     }
+    public void Normalize() {
+      var v = new UnityEngine.Vector2(this.x, this.y);
+      v.Normalize();
+      this.x = v.x;
+      this.y = v.y;
+    }
+
+    public static Vec2 Perpendicular(Vec2 direction) {
+      var vec = new UnityEngine.Vector2(direction.x, direction.y);
+      return UnityEngine.Vector2.Perpendicular(vec);
+    }
     public static Vec2 operator -(Vec2 a, Vec2 b)
     {
       return new Vec2(a.x - b.x, a.y - b.y);
@@ -91,6 +107,10 @@ namespace GUIPanels
     public static Vec2 operator +(Vec2 a, Vec2 b)
     {
       return new Vec2(a.x + b.x, a.y + b.y);
+    }
+    public static Vec2 operator *(Vec2 a, float b)
+    {
+      return new Vec2(a.x * b, a.y * b);
     }
     public static implicit operator Vec2(UnityEngine.Vector2 rhs)
     {

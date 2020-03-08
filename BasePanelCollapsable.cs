@@ -56,7 +56,7 @@ namespace GUIPanels
       }
     }
 
-    public virtual void Draw()
+    public override void Draw()
     {
       UpdateEvents();
       // Need to update position

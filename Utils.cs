@@ -1,9 +1,47 @@
 namespace GUIPanels
 {
+  public abstract class Texture
+  {
+    public abstract void SetPixel(int x, int y, Col color);
+    public abstract void Apply();
+  }
+  public static partial class Utils
+  {
+
+    public static Rectangle GetCollapseButtonRect(Vec2 pos, float headerHeight, float paddingAmount, float textSize, float width)
+    {
+      float size = headerHeight * paddingAmount;
+      float padding = (headerHeight - size) / 2f;
+      float xOffset = textSize * 1.11f;
+      var collapseButtonPosition = new Rectangle(pos.x, pos.y, 0, 0);
+      collapseButtonPosition.width = xOffset;
+      collapseButtonPosition.y += padding;
+      collapseButtonPosition.height = size;
+      collapseButtonPosition.x = collapseButtonPosition.x + width - xOffset - padding;
+      return collapseButtonPosition;
+    }
+    public static string GetCollapseButtonText(bool state)
+    {
+      return state ? "[+]" : "[ - ]";
+    }
+  }
   public static class Aspect
   {
-    public static float Scale = 1.0f;
+    static float _scale = 1.0f;
+    public static float Scale
+    {
+      get { return _scale; }
+      set
+      {
+        _scale = value;
+        OnScaleChange();
+      }
+    }
     public static float Adjust(float a) { return Scale * a; }
+    public static float UnAdjust(float scaled) { return scaled / Scale; }
+
+    public delegate void OnScaleChangeDelegate();
+    public static OnScaleChangeDelegate OnScaleChange = new OnScaleChangeDelegate(() => { });
   }
 
   public struct Col
@@ -24,6 +62,18 @@ namespace GUIPanels
     public static implicit operator Col(UnityEngine.Color rhs)
     {
       return new Col(rhs.r, rhs.g, rhs.b, rhs.a);
+    }
+    public static implicit operator UnityEngine.Color(Col rhs)
+    {
+      return new UnityEngine.Color(rhs.r, rhs.g, rhs.b, rhs.a);
+    }
+  }
+  public struct Vec3
+  {
+    public float x, y, z;
+    public Vec3(float x, float y, float z)
+    {
+      this.x = x; this.y = y; this.z = z;
     }
   }
   public struct Vec2

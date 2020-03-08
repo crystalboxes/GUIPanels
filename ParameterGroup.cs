@@ -1,6 +1,8 @@
+using System;
+
 namespace GUIPanels
 {
-  public class ParameterGroup : BasePanel, IParameter
+  public class ParameterGroup : BasePanelCollapsable, IParameter
   {
     string _name;
 
@@ -104,6 +106,20 @@ namespace GUIPanels
       get { return Col.white; }
     }
 
+    Func<bool> IParameter.HideWhen
+    {
+      get
+      {
+        return this.HideWhen;
+      }
+
+      set
+      {
+        this.HideWhen = value;
+      }
+    }
+
+    public System.Func<bool> HideWhen = () => false;
     protected override void DrawWindowBox()
     {
     }

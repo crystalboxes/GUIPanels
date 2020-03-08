@@ -2,8 +2,21 @@ using UnityEngine;
 
 namespace GUIPanels
 {
-  public static class Utils
+  public static partial class Utils
   {
+    public static Col HSVToRGB(float h, float s, float v)
+    {
+      return Color.HSVToRGB(h, s, v);
+    }
+    public static void RGBToHSV(Col color, out float h, out float s, out float v)
+    {
+      Color.RGBToHSV(color, out h, out s, out v);
+    }
+
+    public static Texture MakeTexture(int width, int height)
+    {
+      return new Unity.UnityTexture(width, height);
+    }
     public static Style MakeStyle()
     {
       return new Unity.UnityStyle();
@@ -11,7 +24,10 @@ namespace GUIPanels
     public static Vec2 MousePosition()
     {
       var mp = Input.mousePosition;
-      return new Vec2(mp.x, Screen.height - mp.y);
+      return new Vec2(
+        Aspect.UnAdjust(mp.x),
+        Aspect.UnAdjust(Screen.height - mp.y)
+      );
     }
     public static bool GetMouseButton()
     {
@@ -35,11 +51,35 @@ namespace GUIPanels
     }
     public static Rect ToRect(Rectangle rect)
     {
-      return new Rect(rect.x, rect.y, rect.width, rect.height);
+      return new Rect(
+        Aspect.Adjust(rect.x),
+        Aspect.Adjust(rect.y),
+        Aspect.Adjust(rect.width),
+        Aspect.Adjust(rect.height)
+      );
     }
   }
   namespace Unity
   {
+    public class UnityTexture : GUIPanels.Texture
+    {
+      public override void SetPixel(int x, int y, Col color)
+      {
+        Tex.SetPixel(x, y, color);
+      }
+
+      public override void Apply()
+      {
+        Tex.Apply();
+      }
+
+      public Texture2D Tex { get { return _texture; } }
+      Texture2D _texture;
+      public UnityTexture(int width, int height)
+      {
+        _texture = new Texture2D(width, height, TextureFormat.ARGB32, false, false);
+      }
+    }
     public class UnityStyle : Style
     {
       GUIStyle _style;
@@ -47,18 +87,22 @@ namespace GUIPanels
       public UnityStyle()
       {
         _style = new GUIStyle(GUIStyle.none);
+        Aspect.OnScaleChange += () => FontSize = _fontSize;
       }
+
+      float _fontSize = 14f;
 
       public override float FontSize
       {
         get
         {
-          return _style.fontSize;
+          return _fontSize;
         }
 
         set
         {
-          _style.fontSize = (int)value;
+          _fontSize = value;
+          _style.fontSize = (int)(Aspect.Adjust(_fontSize));
         }
       }
 
@@ -76,6 +120,11 @@ namespace GUIPanels
     }
     public class Renderer : GUIPanels.Renderer
     {
+      public override void DrawTexture(Rectangle rectangle, Texture texture)
+      {
+        GUI.DrawTexture(Utils.ToRect(rectangle), (texture as UnityTexture).Tex);
+      }
+
       class RectTexture
       {
         public Texture2D GetTexture(Color col)

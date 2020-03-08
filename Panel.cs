@@ -19,7 +19,7 @@ namespace GUIPanels
       {
         return new PanelSettings()
         {
-          Width = 200,
+          Width = 175,
           PaddingLine = 4,
           PaddingTop = 0,
           HeaderOffset = 2,
@@ -27,8 +27,8 @@ namespace GUIPanels
           PaddingX = 5,
           HeaderColor = new Col(0.5f, 0.5f, 0.5f, 0.8f),
           BackgroundColor = new Col(1, 1, 1, 0.3f),
-          TextColor = Col.white,
-          TextSize = 14,
+          TextColor = Col.black,
+          TextSize = 12,
           HeaderHeight = 13,
           ShowTitle = true,
         };
@@ -36,7 +36,7 @@ namespace GUIPanels
     }
   }
 
-  public class Panel : BasePanel
+  public class Panel : BasePanelCollapsable
   {
     public override float Width
     {

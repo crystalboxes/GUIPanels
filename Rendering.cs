@@ -2,6 +2,7 @@ namespace GUIPanels
 {
   public abstract class Renderer
   {
+    public abstract void DrawTexture(Rectangle rectangle, Texture texture);
     public abstract void DrawRect(Rectangle rectangle, Col color);
     static Renderer _renderer;
 

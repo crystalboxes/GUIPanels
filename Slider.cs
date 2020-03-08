@@ -24,26 +24,28 @@ namespace GUIPanels
   public class Slider : Parameter
   {
     string _name;
-    Action<float> _callback;
-    float _value = 0;
+    Action<float> _setValueCallback;
+    Func<float> _getValueCallback;
+    float _value { get { return _getValueCallback(); } }
     float _min = 0;
     float _max = 1;
     Style _style;
     SliderSettings _settings = SliderSettings.Default;
-    public Slider(string name, Action<float> callback, float value = 0, float min = 0, float max = 1)
+    public Slider(string name, Func<float> getValueCallback, Action<float> setValueCallback, float min = 0, float max = 1)
     {
       _name = name;
-      _callback = callback;
-      _value = value;
+      _setValueCallback = setValueCallback;
+      _getValueCallback = getValueCallback;
       _min = min;
       _max = max;
     }
-    public Slider(string name, Action<float> callback, SliderSettings settings, float value = 0, float min = 0, float max = 1)
+
+    public Slider(string name, Func<float> getValueCallback, Action<float> setValueCallback, float min, float max, SliderSettings settings)
     {
       _settings = settings;
       _name = name;
-      _callback = callback;
-      _value = value;
+      _setValueCallback = setValueCallback;
+      _getValueCallback = getValueCallback;
       _min = min;
       _max = max;
     }
@@ -106,9 +108,9 @@ namespace GUIPanels
       if (_mouseDown)
       {
         float x = (mousePosition.x - sliderRect.x) / sliderRect.width;
+        // Clamp
         x = x < 0 ? 0 : x > 1 ? 1 : x;
-        _value = x * (_max - _min);
-        _callback(_value);
+        _setValueCallback(x * (_max - _min));
         _mouseDown = Utils.GetMouseButton();
       }
 

@@ -9,13 +9,14 @@ namespace GUIPanels
       get { return Owner.TextSize; }
     }
     string _title;
-    bool _value;
-    Action<bool> _callback;
-    public Toggle(string title, Action<bool> cb, bool value)
+    bool _value { get { return _getValueCallback(); } }
+    Action<bool> _setValueCallback;
+    Func<bool> _getValueCallback;
+    public Toggle(string title, Func<bool> getValueCallback, Action<bool> setValueCallback)
     {
       _title = title;
-      _value = value;
-      _callback = cb;
+      _getValueCallback = getValueCallback;
+      _setValueCallback = setValueCallback;
     }
 
     Rectangle ToggleBoxRect
@@ -51,7 +52,7 @@ namespace GUIPanels
 
       if (ToggleBoxRect.Contains(Utils.MousePosition()) && Owner.MouseUp)
       {
-        _value = !_value;
+        _setValueCallback(!_value);
       }
 
 

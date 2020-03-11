@@ -2,20 +2,18 @@ namespace GUIPanels
 {
   public class Label : DrawableComponent, IValueComponent<string>
   {
-    System.Func<string> _getValueCallback = null;
-    System.Action<string> _setValueCallback = null;
     public string Title { get; set; }
-
     public string Value
     {
-      get { return _getValueCallback == null ? default(string) : _getValueCallback(); }
-      set { if (_setValueCallback != null) _setValueCallback(value); }
+      get { return _valueComponent.Value; }
+      set { _valueComponent.Value = value; }
     }
+
+    ValueComponent<string> _valueComponent;
 
     public Label(string title, System.Func<string> getValueCallback = null, System.Action<string> setValueCallback = null)
     {
-      _getValueCallback = getValueCallback;
-      _setValueCallback = setValueCallback;
+      _valueComponent = new ValueComponent<string>(getValueCallback, setValueCallback);
       Title = title;
     }
     protected override float ContentHeight
@@ -32,7 +30,6 @@ namespace GUIPanels
         return CalculatedTextSize.x;
       }
     }
-
 
     string Text
     {

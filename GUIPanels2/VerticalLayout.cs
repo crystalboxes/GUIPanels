@@ -2,16 +2,9 @@ namespace GUIPanels
 {
   public class VerticalLayout : DrawableComponent
   {
-    public VerticalLayout(float width) : base()
+    public VerticalLayout(float width = 100f) : base()
     {
       Style.Set<float>(Styles.Width, width);
-    }
-
-    public override void AddChild(IDrawableComponent child)
-    {
-      base.AddChild(child);
-      // Remove child property so it inherits from the parent
-      child.Style.RemoveProperty(Styles.Width);
     }
 
     protected override void Render()
@@ -25,6 +18,7 @@ namespace GUIPanels
       {
         var box = comp.Box;
         comp.Position = new Vec2(pos.x, y);
+        comp.Style.Set(Styles.Width, InnerWidth);
         y += box.height;
         comp.Draw();
       }

@@ -45,6 +45,7 @@ namespace GUIPanels
       });
       HeaderOffset = 4;
       _container = new VerticalLayout(width);
+      _container.Style.Set(Styles.BackgroundColor, new Col(1, 1, 1, .55f));
 
       base.AddChild(_header);
       base.AddChild(_container);

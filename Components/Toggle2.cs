@@ -2,7 +2,7 @@ using System;
 
 namespace GUIPanels
 {
-  public class Toggle : Parameter
+  public class Toggle2 : Parameter
   {
     public override float Height
     {
@@ -12,7 +12,7 @@ namespace GUIPanels
     bool _value { get { return _getValueCallback(); } }
     Action<bool> _setValueCallback;
     Func<bool> _getValueCallback;
-    public Toggle(string title, Func<bool> getValueCallback, Action<bool> setValueCallback)
+    public Toggle2(string title, Func<bool> getValueCallback, Action<bool> setValueCallback)
     {
       _title = title;
       _getValueCallback = getValueCallback;

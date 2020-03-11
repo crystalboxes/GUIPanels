@@ -43,8 +43,8 @@ namespace GUIPanels
     float TextOffset { get { return 5f; } }
     float CheckedRectScale { get { return 0.5f; } }
 
-    Col PrimaryColor { get { return Col.black; } }
-    Col SecondaryColor { get { return Col.white; } }
+    Col PrimaryColor { get { return Owner.Style.PrimaryColor; } }
+    Col SecondaryColor { get { return Owner.Style.SecondaryColor; } }
 
     public override void Repaint()
     {
@@ -57,11 +57,11 @@ namespace GUIPanels
 
 
       // draw box and then text
-      Rendering.DrawRect(r, PrimaryColor);
+      Rendering.DrawRect(r, SecondaryColor);
 
       if (_value)
       {
-        Rendering.DrawRect(ToggleCheckedBoxRect, SecondaryColor);
+        Rendering.DrawRect(ToggleCheckedBoxRect, PrimaryColor);
       }
       r.x += TextOffset + r.width;
       r.width = Width - r.width;

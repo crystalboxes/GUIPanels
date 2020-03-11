@@ -38,11 +38,13 @@ namespace GUIPanels
     }
     public static float Adjust(float a) { return Scale * a; }
     public static float UnAdjust(float scaled) { return scaled / Scale; }
-    public static Vec2 Adjust(Vec2 a) { 
-      return new Vec2(Scale * a.x, Scale * a.y); 
+    public static Vec2 Adjust(Vec2 a)
+    {
+      return new Vec2(Scale * a.x, Scale * a.y);
     }
-    public static Vec2 UnAdjust(Vec2 scaled) { 
-      return new Vec2(scaled.x / Scale, scaled.y / Scale); 
+    public static Vec2 UnAdjust(Vec2 scaled)
+    {
+      return new Vec2(scaled.x / Scale, scaled.y / Scale);
     }
 
     public delegate void OnScaleChangeDelegate();
@@ -81,6 +83,7 @@ namespace GUIPanels
       this.x = x; this.y = y; this.z = z;
     }
   }
+
   public struct Vec2
   {
     public float x, y;
@@ -89,14 +92,16 @@ namespace GUIPanels
       this.x = x;
       this.y = y;
     }
-    public void Normalize() {
+    public void Normalize()
+    {
       var v = new UnityEngine.Vector2(this.x, this.y);
       v.Normalize();
       this.x = v.x;
       this.y = v.y;
     }
 
-    public static Vec2 Perpendicular(Vec2 direction) {
+    public static Vec2 Perpendicular(Vec2 direction)
+    {
       var vec = new UnityEngine.Vector2(direction.x, direction.y);
       return UnityEngine.Vector2.Perpendicular(vec);
     }
@@ -126,6 +131,7 @@ namespace GUIPanels
       this.x = x; this.y = y; this.width = w; this.height = h;
     }
 
+    public Vec2 Position { get { return new Vec2(x, y); } }
 
     public bool Contains(Vec2 v)
     {

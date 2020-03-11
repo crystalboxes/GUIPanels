@@ -2,37 +2,38 @@ using System;
 
 namespace GUIPanels
 {
-  public class ParameterGroup : BasePanelCollapsible, IParameter
+  public class VerticalLayoutOld : BasePanel, IParameter
   {
-    public static PanelSettings DefaultSettings
+    public static BasePanelSettings DefaultSettings
     {
       get
       {
-        var s = new PanelSettings();
-        s.HeaderHeight = 15f;
-        s.HeaderOffset = 1f;
-        s.HeaderColor = Col.black;
+        var s = new BasePanelSettings();
         s.PaddingX = 3;
         s.PaddingY = 10f;
         s.PaddingTop = 4f;
-        s.HeaderTextColor = Col.white;
         return s;
       }
     }
 
-    public ParameterGroup(PanelSettings settings, string name = "") : base(settings)
+    public VerticalLayoutOld(BasePanelSettings settings, string name = "") : base(settings, name)
     {
-      Name = name;
     }
 
-    public ParameterGroup(string name = "") : base(DefaultSettings)
+    public VerticalLayoutOld(string name = "") : base(DefaultSettings, name)
     {
-      Name = name;
+    }
+
+    float _width;
+    float IParameter.Width
+    {
+      get { return _width; }
+      set { _width = value; }
     }
 
     public override float Width
     {
-      get { return Owner.Width; }
+      get { return _width; }
     }
 
     public float Height
@@ -44,16 +45,12 @@ namespace GUIPanels
 
     public override Vec2 Position
     {
-      get { return new Vec2(Owner.Position.x, _pos.y); }
+      get { return _pos; }
       set { _pos = value; }
     }
 
     public BasePanel Owner { get; set; }
 
-    protected override float HeaderTextSize
-    {
-      get { return HeaderHeight * 0.5f; }
-    }
 
     public override Style Style
     {
@@ -80,11 +77,6 @@ namespace GUIPanels
     }
 
 
-    float IParameter.Width
-    {
-      get { return this.Width; }
-      set { }
-    }
 
     public void Repaint()
     {

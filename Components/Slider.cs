@@ -5,6 +5,7 @@ namespace GUIPanels
 
   public struct SliderSettings
   {
+    public bool UseCustomColors;
     public Col Active, Filled;
     public float Height, MaxWidth;
     public static SliderSettings Default
@@ -13,15 +14,16 @@ namespace GUIPanels
       {
         return new SliderSettings()
         {
+          UseCustomColors = false,
           Active = Col.white,
           Filled = Col.black,
-          Height = 16,
+          Height = 11,
           MaxWidth = 9999f
         };
       }
     }
   }
-  public class Slider : Parameter
+  public class SliderOld : Parameter
   {
     string _name;
     Action<float> _setValueCallback;
@@ -31,7 +33,7 @@ namespace GUIPanels
     float _max = 1;
     Style _style;
     SliderSettings _settings = SliderSettings.Default;
-    public Slider(string name, Func<float> getValueCallback, Action<float> setValueCallback, float min = 0, float max = 1)
+    public SliderOld(string name, Func<float> getValueCallback, Action<float> setValueCallback, float min = 0, float max = 1)
     {
       _name = name;
       _setValueCallback = setValueCallback;
@@ -40,7 +42,7 @@ namespace GUIPanels
       _max = max;
     }
 
-    public Slider(string name, Func<float> getValueCallback, Action<float> setValueCallback, float min, float max, SliderSettings settings)
+    public SliderOld(string name, Func<float> getValueCallback, Action<float> setValueCallback, float min, float max, SliderSettings settings)
     {
       _settings = settings;
       _name = name;
@@ -73,8 +75,8 @@ namespace GUIPanels
     }
     Rectangle TextRect { get { return new Rectangle(Position.x, Position.y, Width, Owner.TextSize); } }
     float SliderHeight { get { return _settings.Height; } }
-    Col SliderColorFill { get { return _settings.Filled; } }
-    Col SliderColorActive { get { return _settings.Active; } }
+    Col SliderColorFill { get { return _settings.UseCustomColors ? _settings.Filled : Owner.Style.SecondaryColor; } }
+    Col SliderColorActive { get { return _settings.UseCustomColors ? _settings.Active : Owner.Style.PrimaryColor; } }
 
     float SliderStartY { get { return Owner.TextSize + Owner.PaddingLine; } }
     Rectangle SliderRect
@@ -91,11 +93,12 @@ namespace GUIPanels
         return SliderStartY + SliderHeight;
       }
     }
-
+    Func<float, float> clamp01 = x => x < 0 ? 0 : x > 1 ? 1 : x;
 
     bool _mouseDown = false;
     public override void Repaint()
     {
+
       // 
       // handle mouse events
       var mousePosition = Utils.MousePosition();
@@ -109,7 +112,7 @@ namespace GUIPanels
       {
         float x = (mousePosition.x - sliderRect.x) / sliderRect.width;
         // Clamp
-        x = x < 0 ? 0 : x > 1 ? 1 : x;
+        x = clamp01(x);
         _setValueCallback(x * (_max - _min));
         _mouseDown = Utils.GetMouseButton();
       }
@@ -124,7 +127,7 @@ namespace GUIPanels
       var sliderRect = SliderRect;
       Rendering.DrawRect(sliderRect, SliderColorFill);
       Rendering.DrawRect(new Rectangle(sliderRect.x, sliderRect.y,
-        _value / (_max - _min) * sliderRect.width, sliderRect.height),
+        clamp01(_value / (_max - _min)) * sliderRect.width, sliderRect.height),
         SliderColorActive);
     }
   }

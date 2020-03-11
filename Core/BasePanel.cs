@@ -3,22 +3,52 @@ using System.Collections.Generic;
 namespace GUIPanels
 {
 
+  public class BasePanelSettings
+  {
+    public float PaddingLine = 4,
+    PaddingX = 5, PaddingY = 6,
+    PaddingTop = 2,
+    Width = 135,
+    TextSize = 9,
+    HeaderHeight = 13;
+    public Col TextColor = Col.black;
+    public bool ShowTitle = false;
+  }
+
   public abstract class BasePanel
   {
+    protected virtual string Name
+    {
+      get; set;
+    }
+    BasePanelSettings _basePanelSettings;
+    public BasePanel(BasePanelSettings settings, string name = "")
+    {
+      _basePanelSettings = settings;
+      Name = name;
+
+      // memory leak here
+      Style = Utils.MakeStyle();
+      if (Style != null)
+      {
+        Style.FontColor = settings.TextColor;
+        Style.FontSize = settings.TextSize;
+      }
+    }
     public virtual Vec2 Position { get; set; }
     public virtual void Add(IParameter param)
     {
       _parameters.Add(param);
       param.Owner = this;
     }
-    public abstract float PaddingLine { get; }
-    protected abstract float PaddingX { get; }
-    protected abstract float PaddingY { get; }
-    protected abstract float PaddingTop { get; }
-    public abstract Style Style { get; set; }
-    public abstract float TextSize { get; }
-    public abstract Col TextColor { get; }
-    public abstract float Width { get; }
+    public virtual float PaddingLine { get { return _basePanelSettings.PaddingLine; } }
+    protected virtual float PaddingX { get { return _basePanelSettings.PaddingX; } }
+    protected virtual float PaddingY { get { return _basePanelSettings.PaddingY; } }
+    protected virtual float PaddingTop { get { return _basePanelSettings.PaddingTop; } }
+    public virtual Style Style { get; set; }
+    public virtual float TextSize { get { return Style.FontSize; } }
+    public virtual Col TextColor { get { return Style.FontColor; } }
+    public virtual float Width { get { return _basePanelSettings.Width; } }
 
     protected virtual float WindowBoxHeight { get { return _totalHeight; } }
     protected virtual float WindowBoxStartY { get { return 0; } }
@@ -33,7 +63,7 @@ namespace GUIPanels
     }
     protected float _totalHeight = 0;
     protected List<IParameter> _parameters = new List<IParameter>();
-    protected float UpdateParametersCoordinates(float x, float y)
+    protected virtual float UpdateParametersCoordinates(float x, float y)
     {
       float totalHeight = 0;
 
@@ -56,11 +86,19 @@ namespace GUIPanels
       get { return Position.y + WindowBoxStartY; }
     }
 
+    protected virtual float TitleHeight
+    {
+      get { return _basePanelSettings.ShowTitle ? _basePanelSettings.HeaderHeight + PaddingY : 0; }
+    }
+
     protected virtual void UpdateTotalHeight()
     {
       _totalHeight = WindowBoxStartY;
       _totalHeight += PaddingTop;
-      _totalHeight += UpdateParametersCoordinates(Position.x, StartY + PaddingTop);
+      // add header
+      _totalHeight += TitleHeight;
+
+      _totalHeight += UpdateParametersCoordinates(Position.x, StartY + PaddingTop + TitleHeight);
     }
 
     public virtual void Draw()
@@ -69,6 +107,9 @@ namespace GUIPanels
 
       UpdateTotalHeight();
       DrawWindowBox();
+
+      // Draw header
+
       DrawParameters();
     }
 

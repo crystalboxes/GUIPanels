@@ -17,7 +17,7 @@ namespace GUIPanels
           TextBoxPadding = 2,
           ColorPreviewWidthPercent = 0.13f,
           HandleColor = Col.white,
-          PickerHeight = 150,
+          PickerHeight = 100,
           HueSliderHeight = 13,
           HueSliderVerticalOffset = 4,
           HueSliderHandleWidth = 7,

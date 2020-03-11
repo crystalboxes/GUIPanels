@@ -29,6 +29,11 @@ namespace GUIPanels.Unity
       }
     }
 
+    void Vertex3(float x, float y, float z = -10)
+    {
+      GL.Vertex3(x, y, z);
+    }
+
     public override void DrawLine(Vec2 p0, Vec2 p1, float width, Col color)
     {
       p0 = Aspect.Adjust(p0);
@@ -59,19 +64,49 @@ namespace GUIPanels.Unity
       DrawCircleCommands(p0, halfWidth, color);
       DrawCircleCommands(p1, halfWidth, color);
 
-      GL.Vertex3(start0.x, start0.y, 0);
-      GL.Vertex3(end0.x, end0.y, 0);
-      GL.Vertex3(end1.x, end1.y, 0);
+      Vertex3(start0.x, start0.y);
+      Vertex3(end0.x, end0.y);
+      Vertex3(end1.x, end1.y);
 
-      GL.Vertex3(start0.x, start0.y, 0);
-      GL.Vertex3(end1.x, end1.y, 0);
-      GL.Vertex3(start1.x, start1.y, 0);
+      Vertex3(start0.x, start0.y);
+      Vertex3(end1.x, end1.y);
+      Vertex3(start1.x, start1.y);
 
       GL.End();
     }
     public override void DrawArc(Vec2 center, float radius, float startAngle, float endAngle, Col color)
     {
+      if (endAngle < startAngle)
+      {
+        var c = startAngle;
+        startAngle = endAngle;
+        endAngle = startAngle;
+      }
 
+      center = Aspect.Adjust(center);
+      radius = Aspect.Adjust(radius);
+
+      float angle = startAngle * DEG2RAD;
+      endAngle = endAngle * DEG2RAD;
+      float incr = (endAngle - angle) / (float)CircleResolution;
+
+      RenderMaterial.SetPass(0);
+      GL.Begin(GL.TRIANGLES);
+      GL.Color(color);
+
+      while (angle < endAngle)
+      {
+        Vertex3(center.x, center.y);
+        Vertex3(
+          center.x + (float)System.Math.Sin(angle) * radius,
+          center.y + (float)System.Math.Cos(angle) * radius);
+        Vertex3(
+          center.x + (float)System.Math.Sin(angle + incr) * radius,
+          center.y + (float)System.Math.Cos(angle + incr) * radius);
+        angle += incr;
+      }
+
+      GL.End();
     }
 
     void DrawCircleCommands(Vec2 center, float radius, Col color)
@@ -81,13 +116,13 @@ namespace GUIPanels.Unity
       float incr = twopi / (float)CircleResolution;
       while (angle < twopi)
       {
-        GL.Vertex3(center.x, center.y, 0);
-        GL.Vertex3(
+        Vertex3(center.x, center.y);
+        Vertex3(
           center.x + (float)System.Math.Sin(angle) * radius,
-          center.y + (float)System.Math.Cos(angle) * radius, 0);
-        GL.Vertex3(
+          center.y + (float)System.Math.Cos(angle) * radius);
+        Vertex3(
           center.x + (float)System.Math.Sin(angle + incr) * radius,
-          center.y + (float)System.Math.Cos(angle + incr) * radius, 0);
+          center.y + (float)System.Math.Cos(angle + incr) * radius);
         angle += incr;
       }
     }
@@ -113,6 +148,13 @@ namespace GUIPanels.Unity
       var r = Aspect.Adjust(radius);
       var ri = Aspect.Adjust(innerRadius);
 
+      if (endAngle < startAngle)
+      {
+        var c = startAngle;
+        startAngle = endAngle;
+        endAngle = startAngle;
+      }
+
       if (ri < float.Epsilon)
       {
         DrawArc(center, radius, startAngle, endAngle, color);
@@ -132,28 +174,28 @@ namespace GUIPanels.Unity
       float angle = startAngle * DEG2RAD;
       endAngle = endAngle * DEG2RAD;
 
-      float twopi = 2f * (float)System.Math.PI;
-      float incr = twopi / (float)CircleResolution;
-      while (angle < twopi)
+      float incr = (endAngle - angle) / (float)CircleResolution;
+      while (angle < endAngle)
       {
         float s = (float)System.Math.Sin(angle);
         float c = (float)System.Math.Cos(angle);
         float si = (float)System.Math.Sin(angle + incr);
         float ci = (float)System.Math.Cos(angle + incr);
 
-        GL.Vertex3(ct.x + s * r, ct.y + c * r, 0);
-        GL.Vertex3(ct.x + si * r, ct.y + ci * r, 0);
-        GL.Vertex3(ct.x + s * ri, ct.y + c * ri, 0);
+        Vertex3(ct.x + s * r, ct.y + c * r);
+        Vertex3(ct.x + si * r, ct.y + ci * r);
+        Vertex3(ct.x + s * ri, ct.y + c * ri);
 
-        GL.Vertex3(ct.x + s * ri, ct.y + c * ri, 0);
-        GL.Vertex3(ct.x + si * r, ct.y + ci * r, 0);
-        GL.Vertex3(ct.x + si * ri, ct.y + ci * ri, 0);
+        Vertex3(ct.x + s * ri, ct.y + c * ri);
+        Vertex3(ct.x + si * r, ct.y + ci * r);
+        Vertex3(ct.x + si * ri, ct.y + ci * ri);
 
         angle += incr;
       }
       GL.End();
 
     }
+
 
     public override void DrawRect(Rectangle rectangle1, Col color)
     {
@@ -162,13 +204,13 @@ namespace GUIPanels.Unity
       // Draw lines
       GL.Begin(GL.TRIANGLES);
       GL.Color(color);
-      GL.Vertex3(rectangle.x, rectangle.y, 0);
-      GL.Vertex3(rectangle.x + rectangle.width, rectangle.y, 0);
-      GL.Vertex3(rectangle.x, rectangle.y + rectangle.height, 0);
+      Vertex3(rectangle.x, rectangle.y);
+      Vertex3(rectangle.x + rectangle.width, rectangle.y);
+      Vertex3(rectangle.x, rectangle.y + rectangle.height);
 
-      GL.Vertex3(rectangle.x + rectangle.width, rectangle.y, 0);
-      GL.Vertex3(rectangle.x + rectangle.width, rectangle.y + rectangle.height, 0);
-      GL.Vertex3(rectangle.x, rectangle.y + rectangle.height, 0);
+      Vertex3(rectangle.x + rectangle.width, rectangle.y);
+      Vertex3(rectangle.x + rectangle.width, rectangle.y + rectangle.height);
+      Vertex3(rectangle.x, rectangle.y + rectangle.height);
       GL.End();
     }
   }

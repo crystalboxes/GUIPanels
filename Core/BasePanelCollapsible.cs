@@ -2,25 +2,36 @@ using System.Collections.Generic;
 
 namespace GUIPanels
 {
-  public abstract class BasePanelCollapsable : BasePanel
+  public class BasePanelCollapsibleSettings : BasePanelSettings
   {
-    protected virtual string Name
-    {
-      get { return ""; }
-    }
+    public float HeaderOffset = 2;
+    public Col HeaderColor = new Col(0.5f, 0.5f, 0.5f, 0.8f);
+    public Col HeaderTextColor = Col.black;
+    public new bool ShowTitle = true;
 
+  }
+  public abstract class BasePanelCollapsible : BasePanel
+  {
+    BasePanelCollapsibleSettings _basePanelCollapsibleSettings;
+    public BasePanelCollapsible(BasePanelCollapsibleSettings settings) : base(settings)
+    {
+      _basePanelCollapsibleSettings = settings;
+    }
 
 
     bool _collapsed = false;
 
-    float HeaderTextSize
+    protected virtual float HeaderHeight { get { return _basePanelCollapsibleSettings.HeaderHeight; } }
+    protected virtual float HeaderOffset { get { return _basePanelCollapsibleSettings.HeaderOffset; } }
+
+    protected virtual float HeaderTextSize
     {
       get { return HeaderHeight * 0.65f; }
     }
 
     protected virtual Col HeaderColor
     {
-      get { return Col.black; }
+      get { return _basePanelCollapsibleSettings.HeaderColor; }
     }
 
     protected Rectangle CollapsedButtonRect
@@ -38,6 +49,8 @@ namespace GUIPanels
         return collapseButtonPosition;
       }
     }
+
+
 
     Style collapsedButtonStyle = null;
 
@@ -75,7 +88,7 @@ namespace GUIPanels
 
     protected virtual Col HeaderTextColor
     {
-      get { return Col.black; }
+      get { return _basePanelCollapsibleSettings.HeaderTextColor; }
     }
 
     protected void DrawCollapsedButton()
@@ -90,15 +103,13 @@ namespace GUIPanels
 
       var collapsedButtonRect = CollapsedButtonRect;
       DrawCollapsedButton();
-      if (Name.Length <= 0) return;
+      if (Name.Length <= 0 || !_basePanelCollapsibleSettings.ShowTitle) return;
       collapsedButtonRect.x = Position.x + PaddingX;
       Rendering.DrawText(collapsedButtonRect, Name, CollapsedButtonStyle);
     }
 
 
 
-    protected abstract float HeaderHeight { get; }
-    protected abstract float HeaderOffset { get; }
     float HeaderOffsetChecked { get { return _collapsed ? 0 : HeaderOffset; } }
 
 

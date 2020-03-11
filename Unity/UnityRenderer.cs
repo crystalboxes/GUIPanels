@@ -4,6 +4,12 @@ namespace GUIPanels
 {
   public static partial class Utils
   {
+    public static Vec2 CalcSize(string text, ElementStyle style)
+    {
+      Style s = style;
+      var unityStyle = s as Unity.UnityStyle;
+      return unityStyle.GUIStyle.CalcSize(new GUIContent(text)) / Aspect.Scale;
+    }
     public static Col HSVToRGB(float h, float s, float v)
     {
       return Color.HSVToRGB(h, s, v);
@@ -36,6 +42,10 @@ namespace GUIPanels
     public static bool GetMouseDown()
     {
       return Input.GetMouseButtonDown(0);
+    }
+    public static float Time
+    {
+      get { return UnityEngine.Time.time; }
     }
     public static bool GetMouseUp()
     {

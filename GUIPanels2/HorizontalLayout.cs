@@ -42,6 +42,23 @@ namespace GUIPanels
       }
     }
 
+    protected override float ContentWidth
+    {
+      get
+      {
+        if (_useRightAlignment)
+        {
+          return base.ContentWidth;
+        }
+        float w = 0;
+        foreach (var ch in Children)
+        {
+          w += ch.Box.width;
+        }
+        return w;
+      }
+    }
+
     protected override float ContentHeight
     {
       get

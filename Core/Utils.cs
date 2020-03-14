@@ -11,8 +11,8 @@ namespace GUIPanels
     public static System.Func<float, float> Clamp01 = x => Clamp(x, 0, 1);
     public static float Map(float x, float inMin, float inMax, float outMin, float outMax, bool clamp = false)
     {
-        if (clamp) x = System.Math.Max(inMin, System.Math.Min(x, inMax));
-        return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+      if (clamp) x = System.Math.Max(inMin, System.Math.Min(x, inMax));
+      return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
     }
     public static Rectangle GetCollapseButtonRect(Vec2 pos, float headerHeight, float paddingAmount, float textSize, float width)
     {
@@ -148,5 +148,10 @@ namespace GUIPanels
       }
       return false;
     }
+    public override string ToString()
+    {
+      return string.Format("Rect: [x {0:00}, y {1:00}, w {2:00}, h {3:00}]", this.x, this.y, this.width, this.height);
+    }
+
   }
 }

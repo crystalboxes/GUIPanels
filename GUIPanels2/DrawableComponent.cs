@@ -16,11 +16,13 @@ namespace GUIPanels
       Style.Set(Styles.FontSize, 10f);
       Style.Set(Styles.FontColor, Col.black);
     }
+
     public Vec2 Position
     {
       get { return Style.Get<Vec2>(Styles.Position); }
       set { Style.Set<Vec2>(Styles.Position, value); }
     }
+
     public virtual void SetParent(IDrawableComponent parent)
     {
       _parent = parent;
@@ -40,11 +42,26 @@ namespace GUIPanels
         return new Rectangle(pos.x, pos.y, InnerWidth, InnerHeight);
       }
     }
-    protected virtual float ContentWidth { get { return Style.Get<float>(Styles.Width); } }
-    protected virtual float ContentHeight { get { return Style.Get<float>(Styles.Height); } }
 
-    protected virtual float InnerWidth { get { return ContentWidth - Border.Left - Border.Right - Padding.Left - Padding.Right; } }
-    protected virtual float InnerHeight { get { return ContentHeight - Border.Top - Border.Bottom - Padding.Top - Padding.Bottom; } }
+    protected virtual float ContentWidth
+    {
+      get { return Style.Get<float>(Styles.Width); }
+    }
+
+    protected virtual float ContentHeight
+    {
+      get { return Style.Get<float>(Styles.Height); }
+    }
+
+    protected virtual float InnerWidth
+    {
+      get { return ContentWidth - Border.Left - Border.Right - Padding.Left - Padding.Right; }
+    }
+
+    protected virtual float InnerHeight
+    {
+      get { return ContentHeight - Border.Top - Border.Bottom - Padding.Top - Padding.Bottom; }
+    }
 
     protected virtual Vec2 ContentPosition
     {
@@ -58,9 +75,20 @@ namespace GUIPanels
       }
     }
 
-    Dim Margin { get { return Style.Get<Dim>(Styles.Margin); } }
-    Dim Padding { get { return Style.Get<Dim>(Styles.Padding); } }
-    Dim Border { get { return Style.Get<Dim>(Styles.Border); } }
+    Dim Margin
+    {
+      get { return Style.Get<Dim>(Styles.Margin); }
+    }
+
+    Dim Padding
+    {
+      get { return Style.Get<Dim>(Styles.Padding); }
+    }
+
+    Dim Border
+    {
+      get { return Style.Get<Dim>(Styles.Border); }
+    }
 
     IDrawableComponent _parent;
     List<IDrawableComponent> _children = new List<IDrawableComponent>();
@@ -77,28 +105,40 @@ namespace GUIPanels
           // margin left right border padding width
           Dim margin = Margin, padding = Padding, border = Border;
           rect.width = margin.Left + border.Left + padding.Left
-            + margin.Right + border.Right + padding.Right + InnerWidth;
+                       + margin.Right + border.Right + padding.Right + InnerWidth;
           rect.height = margin.Top + border.Top + padding.Top
-            + margin.Bottom + border.Bottom + padding.Bottom + InnerHeight;
+                        + margin.Bottom + border.Bottom + padding.Bottom + InnerHeight;
         }
 
         return rect;
       }
     }
+
     ElementStyle _style;
-    public ElementStyle Style { get { return _style; } }
-    public IDrawableComponent Parent { get { return _parent; } }
-    public List<IDrawableComponent> Children { get { return _children; } }
+
+    public ElementStyle Style
+    {
+      get { return _style; }
+    }
+
+    public IDrawableComponent Parent
+    {
+      get { return _parent; }
+    }
+
+    public List<IDrawableComponent> Children
+    {
+      get { return _children; }
+    }
+
     public void Draw()
     {
       if (Style.Get<bool>(Styles.Hidden))
       {
         return;
       }
-      Render();
-    }
-    protected virtual void Render()
-    {
+
+
       // update all events
       UpdateEvents();
       Dim margin = Margin, padding = Padding, border = Border;
@@ -125,12 +165,12 @@ namespace GUIPanels
       if (border.Left > float.Epsilon)
       {
         Rendering.DrawRect(new Rectangle(marginOffset.x, marginOffset.y,
-        border.Left, heightWithBorder), borderColor);
+          border.Left, heightWithBorder), borderColor);
       }
 
       if (border.Right > float.Epsilon)
       {
-        Rendering.DrawRect(new Rectangle(marginOffset.x + border.Left + padding.Left + InnerWidth,
+        Rendering.DrawRect(new Rectangle(marginOffset.x + border.Left + padding.Left + InnerWidth + padding.Right,
           marginOffset.y,
           border.Right, heightWithBorder), borderColor);
       }
@@ -141,7 +181,14 @@ namespace GUIPanels
           marginOffset.y + border.Top + padding.Top + InnerHeight + padding.Bottom,
           widthWithBorder, border.Bottom), borderColor);
       }
+
+      Render();
     }
+
+    protected virtual void Render()
+    {
+    }
+
     float _mouseDownTime = 0;
     const float clickInterval = 0.3f;
     bool _mouseEntered = false;

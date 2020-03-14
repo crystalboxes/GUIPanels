@@ -37,7 +37,7 @@ namespace GUIPanels
       {
         var value = Value;
         var text = Title;
-        if (value != null)
+        if (value != null && value.Length > 0)
         {
           text = string.Format("{0}: {1}", Title, value);
         }
@@ -49,7 +49,6 @@ namespace GUIPanels
 
     protected override void Render()
     {
-      base.Render();
       Rendering.DrawText(new Rectangle(
         ContentPosition.x,
         ContentPosition.y,

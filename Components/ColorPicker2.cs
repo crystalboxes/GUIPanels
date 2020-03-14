@@ -27,7 +27,7 @@ namespace GUIPanels
       }
     }
   }
-  public class ColorPicker : Parameter
+  public class ColorPicker2 : Parameter
   {
     float TextRectHeight
     {
@@ -60,7 +60,7 @@ namespace GUIPanels
       }
     }
 
-    public ColorPicker(string name, Func<Col> getValueCallback, Action<Col> setValueCallback, ColorPickerSettings settings)
+    public ColorPicker2(string name, Func<Col> getValueCallback, Action<Col> setValueCallback, ColorPickerSettings settings)
     {
       _name = name;
       _setValueCallback = setValueCallback;
@@ -69,7 +69,7 @@ namespace GUIPanels
       _settings = settings;
       Init();
     }
-    public ColorPicker(string name, Func<Col> getValueCallback, Action<Col> setValueCallback)
+    public ColorPicker2(string name, Func<Col> getValueCallback, Action<Col> setValueCallback)
     {
       _name = name;
       _getValueCallback = getValueCallback;

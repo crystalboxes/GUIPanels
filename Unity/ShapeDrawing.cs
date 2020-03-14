@@ -86,7 +86,8 @@ namespace GUIPanels.Unity
       center = Aspect.Adjust(center);
       radius = Aspect.Adjust(radius);
 
-      float angle = startAngle * DEG2RAD;
+      startAngle *= DEG2RAD;
+      float angle = DEG2RAD;
       endAngle = endAngle * DEG2RAD;
       float incr = (endAngle - angle) / (float)CircleResolution;
 
@@ -98,11 +99,11 @@ namespace GUIPanels.Unity
       {
         Vertex3(center.x, center.y);
         Vertex3(
-          center.x + (float)System.Math.Sin(angle) * radius,
-          center.y + (float)System.Math.Cos(angle) * radius);
+          center.x + (float)System.Math.Sin(Utils.Clamp(angle, startAngle, endAngle)) * radius,
+          center.y + (float)System.Math.Cos(Utils.Clamp(angle, startAngle, endAngle)) * radius);
         Vertex3(
-          center.x + (float)System.Math.Sin(angle + incr) * radius,
-          center.y + (float)System.Math.Cos(angle + incr) * radius);
+          center.x + (float)System.Math.Sin(Utils.Clamp(angle + incr, startAngle, endAngle)) * radius,
+          center.y + (float)System.Math.Cos(Utils.Clamp(angle + incr, startAngle, endAngle)) * radius);
         angle += incr;
       }
 
@@ -171,16 +172,17 @@ namespace GUIPanels.Unity
       GL.Begin(GL.TRIANGLES);
       GL.Color(color);
 
-      float angle = startAngle * DEG2RAD;
+      startAngle *= DEG2RAD;
+      float angle = startAngle;
       endAngle = endAngle * DEG2RAD;
 
       float incr = (endAngle - angle) / (float)CircleResolution;
       while (angle < endAngle)
       {
-        float s = (float)System.Math.Sin(angle);
-        float c = (float)System.Math.Cos(angle);
-        float si = (float)System.Math.Sin(angle + incr);
-        float ci = (float)System.Math.Cos(angle + incr);
+        float s = (float)System.Math.Sin(Utils.Clamp(angle, startAngle, endAngle));
+        float c = (float)System.Math.Cos(Utils.Clamp(angle, startAngle, endAngle));
+        float si = (float)System.Math.Sin(Utils.Clamp(angle + incr, startAngle, endAngle));
+        float ci = (float)System.Math.Cos(Utils.Clamp(angle + incr, startAngle, endAngle));
 
         Vertex3(ct.x + s * r, ct.y + c * r);
         Vertex3(ct.x + si * r, ct.y + ci * r);

@@ -6,7 +6,6 @@ namespace GUIPanels
 
     protected override void Render()
     {
-      base.Render();
       float childWidth = ChildWidth;
       var pos = ContentPosition;
       foreach (var child in Children)

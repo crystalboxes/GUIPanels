@@ -9,7 +9,6 @@ namespace GUIPanels
 
     protected override void Render()
     {
-      base.Render();
       // then border
       // first set position of each component
       var pos = ContentPosition;

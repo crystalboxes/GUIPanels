@@ -1,134 +1,69 @@
-using System;
-
 namespace GUIPanels
 {
-
-  public struct SliderSettings
+  public class Slider : VerticalLayout
   {
-    public bool UseCustomColors;
-    public Col Active, Filled;
-    public float Height, MaxWidth;
-    public static SliderSettings Default
+    Label _label;
+    EmptySpace _activeBar;
+    HorizontalGrid _inactiveBar;
+    float Value
     {
-      get
+      get { return _valueComponent.Value; }
+      set
       {
-        return new SliderSettings()
-        {
-          UseCustomColors = false,
-          Active = Col.white,
-          Filled = Col.black,
-          Height = 11,
-          MaxWidth = 9999f
-        };
+        _valueComponent.Value = value;
+        // map value into range
+        var val = Utils.Map(value, _min, _max, 0, InnerWidth, true);
+        _activeBar.Style.Set(Styles.Width, val);
       }
     }
-  }
-  public class SliderOld : Parameter
-  {
-    string _name;
-    Action<float> _setValueCallback;
-    Func<float> _getValueCallback;
-    float _value { get { return _getValueCallback(); } }
-    float _min = 0;
-    float _max = 1;
-    Style _style;
-    SliderSettings _settings = SliderSettings.Default;
-    public SliderOld(string name, Func<float> getValueCallback, Action<float> setValueCallback, float min = 0, float max = 1)
+
+    float _min, _max;
+
+    public Slider(string title, System.Func<float> getValueCallback = null, System.Action<float> setValueCallback = null, float min = 0, float max = 1, float width = 100f) : base(width)
     {
-      _name = name;
-      _setValueCallback = setValueCallback;
-      _getValueCallback = getValueCallback;
-      _min = min;
+      _valueComponent = new ValueComponent<float>(getValueCallback, setValueCallback);
+      AddChild(new Label(title, ()=>string.Format("{0:0.00}", Value)));
       _max = max;
-    }
-
-    public SliderOld(string name, Func<float> getValueCallback, Action<float> setValueCallback, float min, float max, SliderSettings settings)
-    {
-      _settings = settings;
-      _name = name;
-      _setValueCallback = setValueCallback;
-      _getValueCallback = getValueCallback;
       _min = min;
-      _max = max;
+      var verticalLayout = new VerticalLayout();
+      _inactiveBar = new HorizontalGrid();
+      var horizontalLayout = new HorizontalLayout();
+      _activeBar = new EmptySpace();
+      _inactiveBar.Style.Set(Styles.BackgroundColor, Col.black);
+      _inactiveBar.AddChild(horizontalLayout);
+      verticalLayout.AddChild(_inactiveBar);
+      horizontalLayout.AddChild(_activeBar);
+      _activeBar.Style.Set(Styles.Height, 10f);
+      _activeBar.Style.Set(Styles.BackgroundColor, Col.white);
+      Value = getValueCallback();
+      AddChild(verticalLayout);
     }
-
-    public override void UpdateStyle()
+    ValueComponent<float> _valueComponent;
+    protected override void OnUpdate()
     {
-      _style = Utils.MakeStyle();
-      _style.FontColor = Owner.TextColor;
-      _style.FontSize = Owner.TextSize;
-    }
-
-    Vec2 _currentPosition = new Vec2(0, 0);
-    public override float Width
-    {
-      get { return _settings.MaxWidth < base.Width ? _settings.MaxWidth : base.Width; }
-      set { base.Width = value; }
-    }
-
-    Rectangle Rect
-    {
-      get
+      base.OnUpdate();
+      if (_isDragging)
       {
-        return new Rectangle(Position.x, Position.y, Width, Height);
+        var pos = Utils.MousePosition();
+        var box = _inactiveBar.Box;
+        var val = Utils.Map(pos.x - box.x, 0, box.width, _min, _max, true);
+        _valueComponent.Value = val;
+      }
+      Value = _valueComponent.Value;
+    }
+    bool _isDragging;
+    protected override void OnDraggingStart(float x, float y)
+    {
+      base.OnDraggingStart(x, y);
+      if (_inactiveBar.Box.Contains(new Vec2(x, y)))
+      {
+        _isDragging = true;
       }
     }
-    Rectangle TextRect { get { return new Rectangle(Position.x, Position.y, Width, Owner.TextSize); } }
-    float SliderHeight { get { return _settings.Height; } }
-    Col SliderColorFill { get { return _settings.UseCustomColors ? _settings.Filled : Owner.Style.SecondaryColor; } }
-    Col SliderColorActive { get { return _settings.UseCustomColors ? _settings.Active : Owner.Style.PrimaryColor; } }
-
-    float SliderStartY { get { return Owner.TextSize + Owner.PaddingLine; } }
-    Rectangle SliderRect
+    protected override void OnMouseUp()
     {
-      get
-      {
-        return new Rectangle(Position.x, Position.y + SliderStartY, Width, SliderHeight);
-      }
-    }
-    public override float Height
-    {
-      get
-      {
-        return SliderStartY + SliderHeight;
-      }
-    }
-    Func<float, float> clamp01 = x => x < 0 ? 0 : x > 1 ? 1 : x;
-
-    bool _mouseDown = false;
-    public override void Repaint()
-    {
-
-      // 
-      // handle mouse events
-      var mousePosition = Utils.MousePosition();
-      var sliderRect = Rect;
-      if (sliderRect.Contains(mousePosition) && Utils.GetMouseDown())
-      {
-        _mouseDown = true;
-      }
-
-      if (_mouseDown)
-      {
-        float x = (mousePosition.x - sliderRect.x) / sliderRect.width;
-        // Clamp
-        x = clamp01(x);
-        _setValueCallback(x * (_max - _min));
-        _mouseDown = Utils.GetMouseButton();
-      }
-
-      Draw();
-    }
-
-    void Draw()
-    {
-      Rendering.DrawText(TextRect, string.Format("{0}: {1:0.00}",
-      _name, _value), _style);
-      var sliderRect = SliderRect;
-      Rendering.DrawRect(sliderRect, SliderColorFill);
-      Rendering.DrawRect(new Rectangle(sliderRect.x, sliderRect.y,
-        clamp01(_value / (_max - _min)) * sliderRect.width, sliderRect.height),
-        SliderColorActive);
+      base.OnMouseUp();
+      _isDragging = false;
     }
   }
 }

@@ -1,113 +1,79 @@
-using System;
-
 namespace GUIPanels
 {
-  public class HorizontalLayout2 : BasePanel, IParameter
+  public class HorizontalLayout : DrawableComponent
   {
-    public HorizontalLayout2(BasePanelSettings settings, string name = "") : base(settings, name)
+    bool _useRightAlignment;
+    public HorizontalLayout(bool useRightAlignment = false) : base()
     {
+      _useRightAlignment = useRightAlignment;
     }
-    public System.Func<bool> HideWhen = () => false;
 
-    Func<bool> IParameter.HideWhen
+    protected override void Render()
+    {
+      var pos = ContentPosition;
+      System.Action<IDrawableComponent> draw = comp =>
+      {
+        var box = comp.Box;
+        comp.Position = pos;
+        comp.Draw();
+        pos.x += box.width;
+      };
+      if (_useRightAlignment)
+      {
+        // find total width
+        float w = 0;
+        foreach (var ch in Children)
+        {
+          w += ch.Box.width;
+        }
+        pos.x += InnerWidth - w;
+
+        for (int i = Children.Count - 1; i >= 0; i--)
+        {
+          draw(Children[i]);
+        }
+      }
+      else
+      {
+        for (int i = 0; i < Children.Count; i++)
+        {
+          draw(Children[i]);
+        }
+      }
+    }
+
+    protected override float ContentWidth
     {
       get
       {
-        return this.HideWhen;
-      }
-
-      set
-      {
-        this.HideWhen = value;
+        if (_useRightAlignment)
+        {
+          return base.ContentWidth;
+        }
+        float w = 0;
+        foreach (var ch in Children)
+        {
+          w += ch.Box.width;
+        }
+        return w;
       }
     }
 
-    public float Height
+    protected override float ContentHeight
     {
       get
-      {
-        return _totalHeight;
-      }
-    }
-    public BasePanel Owner { get; set; }
-    public override float Width { get { return _width; } }
-
-    float _width;
-    float IParameter.Width
-    {
-      get
-      {
-        return _width;
-      }
-
-      set
-      {
-        _width = value;
-      }
-    }
-
-
-    protected override void UpdateTotalHeight()
-    {
-      _totalHeight = WindowBoxStartY;
-      _totalHeight += PaddingTop;
-      _totalHeight += UpdateParametersCoordinates(Position.x, StartY + PaddingTop);
-    }
-
-    protected override float UpdateParametersCoordinates(float x, float y)
-    {
-      float totalHeight = 0;
-      float columnWidth = Width / (float)_parameters.Count;
       {
         float max = 0;
-        foreach (var param in _parameters)
+        foreach (var comp in Children)
         {
-          if (param.Height > max)
+          float h = comp.Box.height;
+          if (h > max)
           {
-            max = param.Height;
+            max = h;
           }
         }
-        totalHeight = max;
+        return max;
       }
-
-      foreach (var parameter in _parameters)
-      {
-        if (parameter.HideWhen())
-        {
-          continue;
-        }
-        parameter.Position = new Vec2(x + PaddingX, y);
-        parameter.Width = columnWidth - PaddingX * 2;
-        x += columnWidth;
-      }
-
-      return totalHeight;
-    }
-
-    public override void Draw()
-    {
-      UpdateEvents();
-
-      UpdateTotalHeight();
-      DrawWindowBox();
-      DrawParameters();
-    }
-
-    public void Repaint()
-    {
-      Draw();
-    }
-
-    public void UpdateStyle()
-    {
-      foreach (var param in _parameters)
-      {
-        param.UpdateStyle();
-      }
-    }
-
-    protected override void DrawWindowBox()
-    {
     }
   }
 }

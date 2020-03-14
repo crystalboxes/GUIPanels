@@ -243,9 +243,6 @@ namespace GUIPanels
       Update();
     }
 
-    bool _mouseDownHueSlider = false;
-    bool _mouseDownPicker = false;
-
     void DrawTransparentRectangle(Rectangle rect, float borderWidth)
     {
       var handleColor = HandleColor;

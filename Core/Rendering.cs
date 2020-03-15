@@ -2,6 +2,14 @@ namespace GUIPanels
 {
   public static class Rendering
   {
+    public static void DrawTriangle(Rectangle rect, Col color)
+    {
+      Renderer.Current.DrawTriangle(rect, color);
+    }
+    public static void DrawTriangle(Vec2 a, Vec2 b, Vec2 c, Col color)
+    {
+      Renderer.Current.DrawTriangle(a, b, c, color);
+    }
     public static void DrawTexture(Rectangle rectangle, Texture texture)
     {
       Renderer.Current.DrawTexture(rectangle, texture);
@@ -37,6 +45,9 @@ namespace GUIPanels
   }
   public abstract class Renderer
   {
+    public abstract void DrawTriangle(Rectangle rect, Col color);
+    public abstract void DrawTriangle(Vec2 a, Vec2 b, Vec2 c, Col color);
+
     public int CircleResolution = 20;
     public abstract void DrawLine(Vec2 p0, Vec2 p1, float width, Col color);
     public abstract void DrawArc(Vec2 center, float radius, float startAngle, float endAngle, Col color);

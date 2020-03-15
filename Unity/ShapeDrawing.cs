@@ -34,6 +34,35 @@ namespace GUIPanels.Unity
       GL.Vertex3(x, y, z);
     }
 
+    public override void DrawTriangle(Rectangle rect, Col color)
+    {
+      var rectangle = Utils.ToRect(rect);
+      RenderMaterial.SetPass(0);
+      // Draw lines
+      GL.Begin(GL.TRIANGLES);
+      GL.Color(color);
+      Vertex3(rectangle.x, rectangle.y);
+      Vertex3(rectangle.x + rectangle.width, rectangle.y);
+      Vertex3(rectangle.x + 0.5f * rectangle.width, 
+        rectangle.y + rectangle.height);
+      GL.End();
+    }
+
+    public override void DrawTriangle(Vec2 a, Vec2 b, Vec2 c, Col color)
+    {
+      a = Aspect.Adjust(a);
+      b = Aspect.Adjust(b);
+      c = Aspect.Adjust(c);
+      RenderMaterial.SetPass(0);
+      // Draw lines
+      GL.Begin(GL.TRIANGLES);
+      GL.Color(color);
+      Vertex3(a.x, a.y);
+      Vertex3(b.x, b.y);
+      Vertex3(c.x, c.y);
+      GL.End();
+    }
+
     public override void DrawLine(Vec2 p0, Vec2 p1, float width, Col color)
     {
       p0 = Aspect.Adjust(p0);
@@ -74,6 +103,7 @@ namespace GUIPanels.Unity
 
       GL.End();
     }
+
     public override void DrawArc(Vec2 center, float radius, float startAngle, float endAngle, Col color)
     {
       if (endAngle < startAngle)
@@ -127,6 +157,7 @@ namespace GUIPanels.Unity
         angle += incr;
       }
     }
+
     public override void DrawCircle(Vec2 center, float radius, Col color)
     {
       center = Aspect.Adjust(center);
@@ -138,10 +169,12 @@ namespace GUIPanels.Unity
       DrawCircleCommands(center, radius, color);
       GL.End();
     }
+
     public override void DrawRing(Vec2 center, float radius, float innerRadius, Col color)
     {
       DrawArcRing(center, radius, innerRadius, 0, 360, color);
     }
+
     const float DEG2RAD = 0.0174533f;
     public override void DrawArcRing(Vec2 center, float radius, float innerRadius, float startAngle, float endAngle, Col color)
     {
@@ -195,9 +228,7 @@ namespace GUIPanels.Unity
         angle += incr;
       }
       GL.End();
-
     }
-
 
     public override void DrawRect(Rectangle rectangle1, Col color)
     {

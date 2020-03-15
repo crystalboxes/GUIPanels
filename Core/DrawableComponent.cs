@@ -183,6 +183,16 @@ namespace GUIPanels
       }
 
       Render();
+      foreach (var child in Children) {
+        var drawable = (child as DrawableComponent);
+        if (drawable != null) {
+          drawable.DeferRender();
+        }
+      }
+    }
+
+    public virtual void DeferRender()
+    {
     }
 
     protected virtual void Render()
@@ -215,7 +225,6 @@ namespace GUIPanels
       {
         _mouseEntered = false;
       }
-
 
       _mouseUpPrev = _mouseUp;
       _mouseUp = Utils.GetMouseUp();

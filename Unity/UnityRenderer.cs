@@ -4,6 +4,19 @@ namespace GUIPanels
 {
   public static partial class Utils
   {
+    static string _previous;
+    static int _previousFrameCount;
+    public static string GetInputString() {
+      var s = Input.inputString;
+      string o = "";
+      if (!(s == _previous && UnityEngine.Time.frameCount == _previousFrameCount)) {
+        o = s;
+      } 
+      _previous = s;
+      _previousFrameCount = UnityEngine.Time.frameCount;
+      return o;
+    }
+
     public static Vec2 CalcSize(string text, ElementStyle style)
     {
       Style s = style;

@@ -24,7 +24,7 @@ namespace GUIPanels
       int index = 0;
       foreach (var option in options)
       {
-        component.AddChild(new RadioToggle(option, () =>
+        component.Attach(new RadioToggle(option, () =>
         {
           return _options[System.Array.IndexOf(options, option)];
         }, x =>

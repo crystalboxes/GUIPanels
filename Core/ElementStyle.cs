@@ -17,35 +17,61 @@ namespace GUIPanels
     public static string Width { get { return "width"; } }
     public static string Height { get { return "height"; } }
   }
-  public enum HorizontalAlignment
-  {
-    Center, Left, Right
-  }
+  public enum HorizontalAlignment { Center, Left, Right }
   public class ElementStyleBase
   {
     ////////////////////////
-    ElementStyleBase Background(Col color)
+    public ElementStyleBase SetHidden(bool value = true)
+    {
+      Set(Styles.Hidden, value);
+      return this;
+    }
+    public ElementStyleBase Font(float size)
+    {
+      return Font(size, Col.black);
+    }
+
+    public ElementStyleBase Font(float size, Col color)
+    {
+      Set(Styles.FontColor, color);
+      Set(Styles.FontSize, size);
+      return this;
+    }
+
+    public Vec2 Position() { return Get<Vec2>(Styles.Position); }
+    public ElementStyleBase Position(Vec2 pos)
+    {
+      Set(Styles.Position, pos);
+      return this;
+    }
+
+    public Col Background() { return Get<Col>(Styles.BackgroundColor); }
+    public ElementStyleBase Background(Col color)
     {
       Set(Styles.BackgroundColor, color);
       return this;
     }
+    public Dim Padding() { return Get<Dim>(Styles.Padding); }
+    public ElementStyleBase Padding(float dim) { Set(Styles.Padding, new Dim(dim)); return this; }
+    public ElementStyleBase Padding(Dim dim) { Set(Styles.Padding, dim); return this; }
+    public ElementStyleBase Padding(float top, float leftRight, float bottom) { Set(Styles.Padding, new Dim(top, leftRight, bottom)); return this; }
+    public ElementStyleBase Padding(float topBottom, float leftRight) { Set(Styles.Padding, new Dim(topBottom, leftRight)); return this; }
 
-    ElementStyleBase Padding(float dim) { Set(Styles.Padding, new Dim(dim)); return this; }
-    ElementStyleBase Padding(float top, float leftRight, float bottom) { Set(Styles.Padding, new Dim(top, leftRight, bottom)); return this; }
-    ElementStyleBase Padding(float topBottom, float leftRight) { Set(Styles.Padding, new Dim(topBottom, leftRight)); return this; }
+    public Dim Margin() { return Get<Dim>(Styles.Margin); }
+    public ElementStyleBase Margin(Dim dim) { Set(Styles.Margin, dim); return this; }
+    public ElementStyleBase Margin(float dim) { Set(Styles.Margin, new Dim(dim)); return this; }
+    public ElementStyleBase Margin(float top, float leftRight, float bottom) { Set(Styles.Margin, new Dim(top, leftRight, bottom)); return this; }
+    public ElementStyleBase Margin(float topBottom, float leftRight) { Set(Styles.Margin, new Dim(topBottom, leftRight)); return this; }
 
-    ElementStyleBase Margin(float dim) { Set(Styles.Margin, new Dim(dim)); return this; }
-    ElementStyleBase Margin(float top, float leftRight, float bottom) { Set(Styles.Margin, new Dim(top, leftRight, bottom)); return this; }
-    ElementStyleBase Margin(float topBottom, float leftRight) { Set(Styles.Margin, new Dim(topBottom, leftRight)); return this; }
-
-    ElementStyleBase Border(Col color, float dim = 1)
+    public Dim Border() { return Get<Dim>(Styles.Border); }
+    public Col BorderColor() { return Get<Col>(Styles.BorderColor); }
+    public ElementStyleBase Border(Col color, float dim = 1)
     {
       Set(Styles.Border, new Dim(dim));
       Set(Styles.BorderColor, color);
       return this;
     }
-
-    ElementStyleBase Border(Col color, Dim dim)
+    public ElementStyleBase Border(Col color, Dim dim)
     {
       Set(Styles.Border, dim);
       Set(Styles.BorderColor, color);
@@ -53,7 +79,6 @@ namespace GUIPanels
     }
 
     ////////////////////////
-
     public ElementStyleBase(Widget owner)
     {
       Owner = owner;
@@ -61,9 +86,10 @@ namespace GUIPanels
     public Widget Owner { get; set; }
     ElementStyleBase ParentStyle { get { return Owner == null ? null : Owner.Parent == null ? null : Owner.Parent.Style; } }
     Dictionary<string, object> _properties = new Dictionary<string, object>();
-    public virtual void Set<T>(string propName, T value)
+    public virtual ElementStyleBase Set<T>(string propName, T value)
     {
       _properties[propName] = value;
+      return this;
     }
 
     public void RemoveProperty(string propName)
@@ -102,7 +128,7 @@ namespace GUIPanels
       return style.FontStyle;
     }
 
-    public override void Set<T>(string propName, T value)
+    public override ElementStyleBase Set<T>(string propName, T value)
     {
       base.Set(propName, value);
       if (propName == Styles.FontSize)
@@ -116,6 +142,7 @@ namespace GUIPanels
         object val = value;
         FontStyle.FontColor = (Col)val;
       }
+      return this;
     }
     // this is specific to font rendering
     Style _fontStyle;

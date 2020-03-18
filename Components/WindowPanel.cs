@@ -19,11 +19,10 @@ namespace GUIPanels
       base.AddChild(_header);
       base.AddChild(_container);
     }
-    public override void AddChild(Widget child)
+    protected override void AddChild(Widget child)
     {
-      _container.AddChild(child);
+      _container.Attach(child);
     }
-
 
     protected override void ApplyChildStyles()
     {

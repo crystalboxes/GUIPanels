@@ -49,8 +49,7 @@ namespace GUIPanels
       _filledSpace = new EmptySpace(width, 0);
       _emptySpace.Style.Set(Styles.BackgroundColor, Col.black);
       _filledSpace.Style.Set(Styles.BackgroundColor, Col.white);
-      _verticalLayout.AddChild(_emptySpace);
-      _verticalLayout.AddChild(_filledSpace);
+      _verticalLayout.Attach(_emptySpace, _filledSpace);
       _label = new ValueLabel(title, () =>
       {
         var str = string.Format("{0:0.00}", Value);
@@ -61,7 +60,7 @@ namespace GUIPanels
         }
         return str;
       });
-      _verticalLayout.AddChild(_label);
+      _verticalLayout.Attach(_label);
       AddChild(_verticalLayout);
       Value = getValueCallback();
     }

@@ -65,18 +65,17 @@ namespace GUIPanels
       var left = new HorizontalLayout();
       var right = new HorizontalLayout(true);
       _activeLabel = new Label(options[selectedIndex]);
-      left.AddChild(_activeLabel);
+      left.Attach(_activeLabel);
       float height = Utils.CalcSize("Adsd", Style).y;
       _triangle = new TriangleComponent(height, height, Col.white);
-      right.AddChild(_triangle);
-      grid.AddChild(left);
-      grid.AddChild(right);
+      right.Attach(_triangle);
+      grid.Attach(left, right);
       AddChild(grid);
 
       _opened = new VerticalLayout(InnerWidth);
       foreach (var option in options)
       {
-        _opened.AddChild(new ClickableLable(option, x =>
+        _opened.Attach(new ClickableLable(option, x =>
         {
           _activeLabel.Title = x;
           Toggle();

@@ -19,8 +19,7 @@ namespace GUIPanels
       _filled = new EmptySpace(height, height);
       _filled.Style.Set(Styles.Margin, Dim.right * 5);
 
-      horizontal.AddChild(_filled);
-      horizontal.AddChild(new Label(title));
+      horizontal.Attach(_filled, new Label(title));
 
       AddChild(horizontal);
     }

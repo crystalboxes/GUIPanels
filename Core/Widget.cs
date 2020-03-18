@@ -4,6 +4,15 @@ namespace GUIPanels
 {
   public abstract class Widget
   {
+    public enum State
+    {
+      Idle, Clicked, Hovered
+    }
+
+    State EventState { get { return _state; } }
+    State _state = State.Idle;
+
+
     public Widget()
     {
       _style = new ElementStyle(this);
@@ -21,17 +30,37 @@ namespace GUIPanels
       return (T)System.Activator.CreateInstance(typeof(T), list);
     }
 
+    public Widget Attach(params Widget[] children)
+    {
+      foreach (var child in children)
+      {
+        AddChild(child);
+      }
+      return this;
+    }
     public Widget Attach(Widget child)
     {
       AddChild(child);
       return this;
     }
 
-    public void SetPositionCallbacks(System.Func<Vec2> getPositionCallback,
+    public T Cast<T>() where T : Widget
+    {
+      return (T)this;
+    }
+
+    public Widget ApplyChildStyle(System.Action<Widget> StyleAction)
+    {
+      SetChildStyle = StyleAction;
+      return this;
+    }
+
+    public Widget SetPositionCallbacks(System.Func<Vec2> getPositionCallback,
       System.Action<Vec2> setPositionCallback)
     {
       _getPositionCallback = getPositionCallback;
       _setPositionCallback = setPositionCallback;
+      return this;
     }
 
     System.Func<Vec2> _getPositionCallback;
@@ -91,10 +120,7 @@ namespace GUIPanels
       get { return ContentHeight - _border.Top - _border.Bottom - _padding.Top - _padding.Bottom; }
     }
 
-    Dim Margin
-    {
-      get { return _margin; }
-    }
+    Dim Margin { get { return _margin; } }
 
     Dim Padding { get { return _padding; } }
 
@@ -107,6 +133,7 @@ namespace GUIPanels
 
     void Recalculate()
     {
+      _position = Style.Position();
       _margin = Style.Get<Dim>(Styles.Margin);
       _padding = Style.Get<Dim>(Styles.Padding);
       _border = Style.Get<Dim>(Styles.Border);
@@ -136,7 +163,7 @@ namespace GUIPanels
       _setPositionCallback = null;
     }
 
-    public virtual void AddChild(Widget child)
+    protected virtual void AddChild(Widget child)
     {
       Children.Add(child);
       child.SetParent(this);
@@ -275,8 +302,11 @@ namespace GUIPanels
           _mouseEntered = true;
         }
 
+        _state = State.Hovered;
+
         if (Utils.GetMouseDown())
         {
+          _state = State.Clicked;
           OnDraggingStart(mousePos.x, mousePos.y);
           _mouseDownTime = Utils.Time;
         }
@@ -291,6 +321,8 @@ namespace GUIPanels
 
       if (MouseUp)
       {
+        _state = State.Idle;
+
         OnMouseUp();
         if ((Utils.Time - _mouseDownTime) < clickInterval)
         {

@@ -36,9 +36,9 @@ namespace GUIPanels
       _inactiveBar = new HorizontalGrid();
       var horizontalLayout = new HorizontalLayout();
       _activeBar = new EmptySpace();
-      _inactiveBar.AddChild(horizontalLayout);
-      verticalLayout.AddChild(_inactiveBar);
-      horizontalLayout.AddChild(_activeBar);
+      _inactiveBar.Attach(horizontalLayout);
+      verticalLayout.Attach(_inactiveBar);
+      horizontalLayout.Attach(_activeBar);
 
       Value = getValueCallback();
       AddChild(verticalLayout);

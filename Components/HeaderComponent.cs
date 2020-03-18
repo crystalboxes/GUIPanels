@@ -10,13 +10,12 @@ namespace GUIPanels
       var hL0 = new HorizontalLayout();
       var hL1 = new HorizontalLayout(true);
 
-      hL0.AddChild(new Label(title));
+      hL0.Attach(new Label(title));
       _button = new ToggleButton(true, onToggleClicked);
       // add toggle button to hl1
-      hL1.AddChild(_button);
+      hL1.Attach(_button);
 
-      layout.AddChild(hL0);
-      layout.AddChild(hL1);
+      layout.Attach(hL0, hL1);
       AddChild(layout);
     }
   }

@@ -26,7 +26,7 @@ namespace GUIPanels
       AddChild(new Label(title));
       _horizontalGrid = new HorizontalGrid();
       _textFieldLabel = new Label(getValueCallback != null ? getValueCallback() : "");
-      _horizontalGrid.AddChild(_textFieldLabel);
+      _horizontalGrid.Attach(_textFieldLabel);
       _horizontalGrid.Style.Set(Styles.BackgroundColor, SecondaryColor);
       _textFieldLabel.Style.Set(Styles.FontColor, PrimaryColor);
       AddChild(_horizontalGrid);

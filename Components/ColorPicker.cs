@@ -84,15 +84,12 @@ namespace GUIPanels
 
       ColorDisplayWidth = _colorDisplayWidth;
 
-      horizontalGrid.AddChild(_colorDisplayBlock);
-      horizontalGrid.AddChild(_pickerBlock);
-
-      _pickerLayout.AddChild(horizontalGrid);
+      horizontalGrid.Attach(_colorDisplayBlock, _pickerBlock);
 
       // add slider
       _hueSlider = new TextureWidget(_hueTexture, InnerWidth, 10);
       _hueSlider.Style.Set<Col>(Styles.BackgroundColor, Col.red);
-      _pickerLayout.AddChild(_hueSlider);
+      _pickerLayout.Attach(horizontalGrid, _hueSlider);
 
       AddChild(_header);
       AddChild(_pickerLayout);

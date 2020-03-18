@@ -15,6 +15,8 @@ namespace GUIPanels
   public class DropdownList : VerticalLayout
   {
     public TriangleComponent Triangle { get { return _triangle; } }
+    public Label ActiveLabel { get { return _activeLabel; } }
+    public VerticalLayout OpenedBox { get { return _opened; } }
     TriangleComponent _triangle;
     VerticalLayout _opened;
     Label _activeLabel;
@@ -22,7 +24,7 @@ namespace GUIPanels
 
     public int CurrentIndex { get { return System.Array.IndexOf(_options, _activeLabel.Title); } }
 
-    class ClickableLable : HorizontalGrid
+    public class ClickableLable : HorizontalGrid
     {
       System.Action<string> _onClickCallback;
       public Col HoveredColor { get; set; }
@@ -30,7 +32,6 @@ namespace GUIPanels
       Label _label;
       public ClickableLable(string title, System.Action<string> onClickCallback) : base()
       {
-        HoveredColor = new Col(0.5f, 0.5f, 0.5f, 0.45f);
 
         _onClickCallback = onClickCallback;
         _label = new Label(title);
@@ -39,6 +40,7 @@ namespace GUIPanels
       protected override void OnClick()
       {
         base.OnClick();
+        Utils.Event.OnClick.Use();
         _onClickCallback(_label.Title);
       }
       protected override void OnUpdate()
@@ -58,23 +60,20 @@ namespace GUIPanels
     public DropdownList(string[] options, int selectedIndex, float width = 100) : base(width)
     {
       _options = options;
-      Style.Set<Col>(Styles.BackgroundColor, Col.black);
+
       var grid = new HorizontalGrid();
       var left = new HorizontalLayout();
       var right = new HorizontalLayout(true);
       _activeLabel = new Label(options[selectedIndex]);
-      _activeLabel.Style.Set<Col>(Styles.FontColor, Col.white);
       left.AddChild(_activeLabel);
       float height = Utils.CalcSize("Adsd", Style).y;
       _triangle = new TriangleComponent(height, height, Col.white);
-      _triangle.Style.Set<Dim>(Styles.Padding, new Dim(3f));
       right.AddChild(_triangle);
       grid.AddChild(left);
       grid.AddChild(right);
       AddChild(grid);
 
       _opened = new VerticalLayout(InnerWidth);
-      _opened.Style.Set(Styles.BackgroundColor, Col.white);
       foreach (var option in options)
       {
         _opened.AddChild(new ClickableLable(option, x =>

@@ -7,6 +7,29 @@ namespace GUIPanels
   }
   public static partial class Utils
   {
+    public class Event
+    {
+      public void Use()
+      {
+        _used = true;
+      }
+      public bool Used { get { return _used; } }
+      bool _used;
+      static Event _onClickEvent;
+      static int _previousFrame;
+      public static Event OnClick
+      {
+        get
+        {
+          if (_onClickEvent == null || UnityEngine.Time.frameCount != _previousFrame)
+          {
+            _previousFrame = UnityEngine.Time.frameCount;
+            _onClickEvent = new Event();
+          }
+          return _onClickEvent;
+        }
+      }
+    }
     public static System.Func<float, float, float, float> Clamp = (x, min, max) => x < min ? min : x > max ? max : x;
     public static System.Func<float, float> Clamp01 = x => Clamp(x, 0, 1);
     public static float Map(float x, float inMin, float inMax, float outMin, float outMax, bool clamp = false)
@@ -98,6 +121,11 @@ namespace GUIPanels
     {
       this.x = x;
       this.y = y;
+    }
+
+    public static implicit operator UnityEngine.Vector2(Vec2 rhs)
+    {
+      return new UnityEngine.Vector2(rhs.x, rhs.y);
     }
     public void Normalize()
     {

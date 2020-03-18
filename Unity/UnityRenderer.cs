@@ -6,12 +6,14 @@ namespace GUIPanels
   {
     static string _previous;
     static int _previousFrameCount;
-    public static string GetInputString() {
+    public static string GetInputString()
+    {
       var s = Input.inputString;
       string o = "";
-      if (!(s == _previous && UnityEngine.Time.frameCount == _previousFrameCount)) {
+      if (!(s == _previous && UnityEngine.Time.frameCount == _previousFrameCount))
+      {
         o = s;
-      } 
+      }
       _previous = s;
       _previousFrameCount = UnityEngine.Time.frameCount;
       return o;

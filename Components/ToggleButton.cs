@@ -7,7 +7,7 @@ namespace GUIPanels
     public bool On { get { return _isOn; } }
     Action<bool> _onToggleClicked = null;
     bool _isOn;
-    public ToggleButton(bool isOn, Action<bool> onToggleClicked = null) : base("[+]", null, null)
+    public ToggleButton(bool isOn, Action<bool> onToggleClicked = null) : base("[+]")
     {
       Style.Set(Styles.Width, 12f);
       _onToggleClicked = onToggleClicked;

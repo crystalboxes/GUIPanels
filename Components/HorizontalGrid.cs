@@ -1,6 +1,6 @@
 namespace GUIPanels
 {
-  public class HorizontalGrid : DrawableComponent
+  public class HorizontalGrid : Widget
   {
     float ChildWidth { get { return InnerWidth / (float)Children.Count; } }
 

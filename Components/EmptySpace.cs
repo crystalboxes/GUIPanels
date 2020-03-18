@@ -1,6 +1,6 @@
 namespace GUIPanels
 {
-  public class EmptySpace : DrawableComponent
+  public class EmptySpace : Widget
   {
     public EmptySpace(float width = 10f, float height = 10f) : base()
     {

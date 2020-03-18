@@ -1,6 +1,6 @@
 namespace GUIPanels
 {
-  public class HorizontalLayout : DrawableComponent
+  public class HorizontalLayout : Widget
   {
     bool _useRightAlignment;
     public HorizontalLayout(bool useRightAlignment = false) : base()
@@ -11,13 +11,14 @@ namespace GUIPanels
     protected override void Render()
     {
       var pos = ContentPosition;
-      System.Action<IDrawableComponent> draw = comp =>
+      System.Action<Widget> draw = comp =>
       {
         var box = comp.Box;
         comp.Position = pos;
         comp.Draw();
         pos.x += box.width;
       };
+
       if (_useRightAlignment)
       {
         // find total width

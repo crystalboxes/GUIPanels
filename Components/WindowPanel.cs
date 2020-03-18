@@ -13,20 +13,27 @@ namespace GUIPanels
     VerticalLayout _container;
     public WindowPanel(string title, float width = 165) : base(width)
     {
-      _header = new HeaderComponent(title, x =>
-      {
-        _container.Style.Set(Styles.Hidden, !x);
-      });
-      HeaderOffset = 4;
+      _header = new HeaderComponent(title,
+        x => _container.Style.Set(Styles.Hidden, !x));
       _container = new VerticalLayout(width);
-      _container.Style.Set(Styles.BackgroundColor, new Col(1, 1, 1, .55f));
-
       base.AddChild(_header);
       base.AddChild(_container);
     }
-    public override void AddChild(IDrawableComponent child)
+    public override void AddChild(Widget child)
     {
       _container.AddChild(child);
+    }
+
+
+    protected override void ApplyChildStyles()
+    {
+      if (SetChildStyle != null)
+      {
+        foreach (var child in _container.Children)
+        {
+          SetChildStyle(child);
+        }
+      }
     }
 
     // handle dragging

@@ -13,10 +13,7 @@ namespace GUIPanels
 
     public float Radius
     {
-      get
-      {
-        return _radius;
-      }
+      get { return _radius; }
       set
       {
         _radius = value;
@@ -30,21 +27,19 @@ namespace GUIPanels
     public Col FilledColor { get; set; }
     EmptySpace _emptySpace;
     float _min, _max;
-    public RotarySlider(string title, Func<float> getValueCallback, Action<float> setValueCallback, float min = 0, float max = 1, float radius = 25f, float width = 9f) : base(radius)
+    public RotarySlider(string title, Func<float> getValueCallback, Action<float> setValueCallback,
+      float min = 0, float max = 1, float radius = 25f, float width = 9f) : base(radius)
     {
       _radius = radius;
-      Width = width;
       _min = min;
       _max = max;
+      Width = width;
 
       _emptySpace = new EmptySpace(_radius * 2, _radius * 2);
       AddChild(_emptySpace);
-      AddChild(new Label(title, () => string.Format("{0:0.00}", Value)));
+      AddChild(new ValueLabel(title, () => string.Format("{0:0.00}", Value)));
 
       _valueComponent = new ValueComponent<float>(getValueCallback, setValueCallback);
-
-      EmptyColor = Col.black;
-      FilledColor = Col.white;
     }
 
     protected override void Render()
@@ -52,9 +47,11 @@ namespace GUIPanels
       base.Render();
       var box = _emptySpace.Box;
       var center = new Vec2(ContentPosition.x + Radius, ContentPosition.y + Radius);
-      // Draw circle
+      // DrawCircle
       Rendering.DrawArcRing(center, Radius, Radius - Width, 0, 360, EmptyColor);
-      Rendering.DrawArcRing(center, Radius, Radius - Width, (1 - Utils.Map(Value, _min, _max, 0, 1)) * 360, 359, FilledColor);
+      Rendering.DrawArcRing(center,
+        Radius, Radius - Width, (1 - Utils.Map(Value, _min, _max, 0, 1)) * 360,
+        359, FilledColor);
     }
 
     bool _isDragging; Vec2 _dragStart; float _startVal;

@@ -1,19 +1,16 @@
 namespace GUIPanels
 {
-  public class Label : DrawableComponent, IValueComponent<string>
+  public class Label : Widget
   {
-    public string Title { get; set; }
-    public string Value
+    public virtual string Title { get; set; }
+    public virtual string Value
     {
-      get { return _valueComponent.Value; }
-      set { _valueComponent.Value = value; }
+      get { return Title; }
+      set { Title = value; }
     }
 
-    ValueComponent<string> _valueComponent;
-
-    public Label(string title, System.Func<string> getValueCallback = null, System.Action<string> setValueCallback = null)
+    public Label(string title)
     {
-      _valueComponent = new ValueComponent<string>(getValueCallback, setValueCallback);
       Title = title;
     }
     protected override float ContentHeight
@@ -35,13 +32,7 @@ namespace GUIPanels
     {
       get
       {
-        var value = Value;
-        var text = Title;
-        if (value != null && value.Length > 0)
-        {
-          text = string.Format("{0}: {1}", Title, value);
-        }
-        return text;
+        return Title;
       }
     }
 

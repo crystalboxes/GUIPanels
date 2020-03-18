@@ -43,7 +43,7 @@ namespace GUIPanels.Unity
       GL.Color(color);
       Vertex3(rectangle.x, rectangle.y);
       Vertex3(rectangle.x + rectangle.width, rectangle.y);
-      Vertex3(rectangle.x + 0.5f * rectangle.width, 
+      Vertex3(rectangle.x + 0.5f * rectangle.width,
         rectangle.y + rectangle.height);
       GL.End();
     }

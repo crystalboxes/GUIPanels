@@ -1,9 +1,9 @@
 namespace GUIPanels
 {
-  public class TextureComponent : EmptySpace
+  public class TextureWidget : EmptySpace
   {
     Texture _tex;
-    public TextureComponent(Texture texture, float width, float height) : base(width, height)
+    public TextureWidget(Texture texture, float width, float height) : base(width, height)
     {
       _tex = texture;
     }

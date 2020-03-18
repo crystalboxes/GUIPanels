@@ -3,22 +3,30 @@ namespace GUIPanels
 {
   public sealed class VerticalSlider : HorizontalLayout
   {
+    public EmptySpace ActiveBar { get { return _filledSpace; } }
+    public EmptySpace InactiveBar { get { return _emptySpace; } }
+
     public Label Label { get { return _label; } }
 
     ValueComponent<float> _valueComponent;
     EmptySpace _emptySpace, _filledSpace;
     VerticalLayout _verticalLayout;
     float _min, _max;
-    float Width { get; set; }
-    float Height { get; set; }
+    public float Width
+    {
+      get { return Style.Get<float>(Styles.Width); }
+      set { Style.Set<float>(Styles.Width, value); }
+    }
+    public float Height
+    {
+      get { return Style.Get<float>(Styles.Width); }
+      set { Style.Set<float>(Styles.Width, value); }
+    }
     Label _label;
 
     float Value
     {
-      get
-      {
-        return _valueComponent.Value;
-      }
+      get { return _valueComponent.Value; }
       set
       {
         _valueComponent.Value = value;
@@ -28,14 +36,13 @@ namespace GUIPanels
         _filledSpace.Style.Set(Styles.Height, val01 * Height);
       }
     }
-    public VerticalSlider(string title, Func<float> getValueCallback, Action<float> setValueCallback, float min = 0, float max = 1, float width = 20, float height = 50) : base()
+    public VerticalSlider(string title, Func<float> getValueCallback, Action<float> setValueCallback,
+      float min = 0, float max = 1, float width = 10f, float height = 50) : base()
     {
       _min = min;
       _max = max;
       Width = width;
       Height = height;
-      Style.Set(Styles.Width, Width);
-      Style.Set(Styles.Height, Height);
       _valueComponent = new ValueComponent<float>(getValueCallback, setValueCallback);
       _verticalLayout = new VerticalLayout(width);
       _emptySpace = new EmptySpace(width, 0);
@@ -44,15 +51,13 @@ namespace GUIPanels
       _filledSpace.Style.Set(Styles.BackgroundColor, Col.white);
       _verticalLayout.AddChild(_emptySpace);
       _verticalLayout.AddChild(_filledSpace);
-      _label = new Label(title, () =>
+      _label = new ValueLabel(title, () =>
       {
         var str = string.Format("{0:0.00}", Value);
         float w = Utils.CalcSize(str, Style).x;
-        if (w > Width)
+        if (w > Width * 0.5f)
         {
-          // float ratio = Width / w;
-          // int newLen = (int)((float)str.Length * ratio);
-          return ""; //str.Substring(0, newLen - 1);
+          return "";
         }
         return str;
       });

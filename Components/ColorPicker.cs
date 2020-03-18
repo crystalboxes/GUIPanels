@@ -6,6 +6,7 @@ namespace GUIPanels
     public EmptySpace ColorDisplay { get { return _colorDisplayBlock; } }
     public EmptySpace Picker { get { return _pickerBlock; } }
     public VerticalLayout PickerLayout { get { return _pickerLayout; } }
+    public EmptySpace HueSlider { get { return _hueSlider; } }
     public string Title { get; set; }
     public float PickerHeight { get; set; }
     public float ColorDisplayWidth
@@ -14,15 +15,12 @@ namespace GUIPanels
       set
       {
         ColorDisplay.Style.Set<float>(Styles.Width, value);
-        Picker.Style.Set<float>(Styles.Width, InnerWidth);
+        Picker.Style.Set<float>(Styles.Width, InnerWidth - value);
         _colorDisplayWidth = value;
       }
     }
     public Col HandleColor { get; set; }
-
     public Col HeaderColor { get; set; }
-
-
 
     HeaderComponent _header;
     EmptySpace _pickerBlock;
@@ -52,8 +50,6 @@ namespace GUIPanels
     public ColorPicker(string title, Func<Col> getValueCallback = null,
     Action<Col> setValueCallback = null, float pickerHeight = 100) : base(100)
     {
-      HandleColor = Col.white;
-      HeaderColor = new Col(.5f, .5f, .5f, 1);
       // Initialize texture here
       _colorDisplayWidth = 10f;
       Title = title;
@@ -81,10 +77,10 @@ namespace GUIPanels
       _pickerLayout = new VerticalLayout();
       var horizontalGrid = new HorizontalLayout();
       _colorDisplayBlock = new EmptySpace(ColorDisplayWidth, pickerHeight);
-      _pickerBlock = new TextureComponent(_pickingTexture, InnerWidth - _colorDisplayWidth, pickerHeight);
+      _pickerBlock = new TextureWidget(_pickingTexture, InnerWidth - _colorDisplayWidth, pickerHeight);
 
       _colorDisplayBlock.Style.Set<Col>(Styles.BackgroundColor, TargetColor);
-      _pickerBlock.Style.Set<Col>(Styles.BackgroundColor, Col.blue);
+      _pickerBlock.Style.Set<Col>(Styles.BackgroundColor, new Col(0, 0, 0, 0));
 
       ColorDisplayWidth = _colorDisplayWidth;
 
@@ -94,7 +90,7 @@ namespace GUIPanels
       _pickerLayout.AddChild(horizontalGrid);
 
       // add slider
-      _hueSlider = new TextureComponent(_hueTexture, InnerWidth, 10);
+      _hueSlider = new TextureWidget(_hueTexture, InnerWidth, 10);
       _hueSlider.Style.Set<Col>(Styles.BackgroundColor, Col.red);
       _pickerLayout.AddChild(_hueSlider);
 
@@ -102,6 +98,9 @@ namespace GUIPanels
       AddChild(_pickerLayout);
     }
     bool _pickerMouseDown = false, _hueSliderMouseDown = false;
+    public float PickerhandleSize = 10,
+       HueSliderHandleWidth = 6,
+       HandleBorderWidth = 1;
 
     protected override void Render()
     {
@@ -111,14 +110,12 @@ namespace GUIPanels
         return;
       }
       // Draw picker handle
-      const float handleBorderWidth = 1;
       var pickerRect = _pickerBlock.Box;
       {
-        const float pickerHandleSize = 10;
         var rect = new Rectangle(pickerRect.x + HSV.y * pickerRect.width, pickerRect.y + (1 - HSV.z) * pickerRect.height,
-          pickerHandleSize, pickerHandleSize);
-        rect.x -= pickerHandleSize * 0.5f;
-        rect.y -= pickerHandleSize * 0.5f;
+          PickerhandleSize, PickerhandleSize);
+        rect.x -= PickerhandleSize * 0.5f;
+        rect.y -= PickerhandleSize * 0.5f;
 
         if (rect.x + rect.width > pickerRect.x + pickerRect.width)
         {
@@ -139,25 +136,24 @@ namespace GUIPanels
         {
           rect.y = pickerRect.y;
         }
-        DrawTransparentRectangle(rect, handleBorderWidth);
+        DrawTransparentRectangle(rect, HandleBorderWidth);
       }
       // Draw hue slider handle
       var hueSliderRect = _hueSlider.Box;
       {
-        const float hueSliderHandleWidth = 6;
         var pos = hueSliderRect.Position;
         var rect = new Rectangle(pos.x + HSV.x * hueSliderRect.width, pos.y,
-        hueSliderHandleWidth, hueSliderRect.height);
-        rect.x -= hueSliderHandleWidth * 0.5f;
+        HueSliderHandleWidth, hueSliderRect.height);
+        rect.x -= HueSliderHandleWidth * 0.5f;
         if (rect.x + rect.width > hueSliderRect.x + hueSliderRect.width)
         {
-          rect.x = hueSliderRect.x + hueSliderRect.width - hueSliderHandleWidth;
+          rect.x = hueSliderRect.x + hueSliderRect.width - HueSliderHandleWidth;
         }
         if (rect.x < hueSliderRect.x)
         {
           rect.x = hueSliderRect.x;
         }
-        DrawTransparentRectangle(rect, handleBorderWidth);
+        DrawTransparentRectangle(rect, HandleBorderWidth);
       }
       var mousePos = Utils.MousePosition();
       bool mouseDown = Utils.GetMouseDown();

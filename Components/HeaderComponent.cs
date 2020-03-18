@@ -6,11 +6,6 @@ namespace GUIPanels
     ToggleButton _button;
     public HeaderComponent(string title, System.Action<bool> onToggleClicked) : base(100)
     {
-      Style.Set(Styles.BackgroundColor, new Col(0.5f, 0.5f, 0.5f, 1));
-      Style.Set(Styles.Height, 12f);
-      Style.Set(Styles.Padding, Dim.bottom * 1 + Dim.top * 2);
-      Style.Set(Styles.Margin, Dim.bottom * 4);
-      // 
       var layout = new HorizontalGrid();
       var hL0 = new HorizontalLayout();
       var hL1 = new HorizontalLayout(true);

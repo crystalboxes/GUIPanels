@@ -1,6 +1,6 @@
 namespace GUIPanels
 {
-  public class VerticalLayout : DrawableComponent
+  public class VerticalLayout : Widget
   {
     public VerticalLayout(float width = 100f) : base()
     {
@@ -30,6 +30,10 @@ namespace GUIPanels
         float h = 0;
         foreach (var comp in Children)
         {
+          if (comp.Style.Get<bool>(Styles.Hidden))
+          {
+            continue;
+          }
           h += comp.Box.height;
         }
         return h;

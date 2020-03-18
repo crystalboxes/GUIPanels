@@ -2,6 +2,13 @@ namespace GUIPanels
 {
   public class Slider : VerticalLayout
   {
+    public EmptySpace ActiveBar { get { return _activeBar; } }
+    public HorizontalGrid InactiveBar { get { return _inactiveBar; } }
+    public float SliderHeight
+    {
+      get { return _activeBar.Style.Get<float>(Styles.Height); }
+      set { _activeBar.Style.Set(Styles.Height, value); }
+    }
     Label _label;
     EmptySpace _activeBar;
     HorizontalGrid _inactiveBar;
@@ -22,19 +29,17 @@ namespace GUIPanels
     public Slider(string title, System.Func<float> getValueCallback = null, System.Action<float> setValueCallback = null, float min = 0, float max = 1, float width = 100f) : base(width)
     {
       _valueComponent = new ValueComponent<float>(getValueCallback, setValueCallback);
-      AddChild(new Label(title, ()=>string.Format("{0:0.00}", Value)));
+      AddChild(new ValueLabel(title, () => string.Format("{0:0.00}", Value)));
       _max = max;
       _min = min;
       var verticalLayout = new VerticalLayout();
       _inactiveBar = new HorizontalGrid();
       var horizontalLayout = new HorizontalLayout();
       _activeBar = new EmptySpace();
-      _inactiveBar.Style.Set(Styles.BackgroundColor, Col.black);
       _inactiveBar.AddChild(horizontalLayout);
       verticalLayout.AddChild(_inactiveBar);
       horizontalLayout.AddChild(_activeBar);
-      _activeBar.Style.Set(Styles.Height, 10f);
-      _activeBar.Style.Set(Styles.BackgroundColor, Col.white);
+
       Value = getValueCallback();
       AddChild(verticalLayout);
     }

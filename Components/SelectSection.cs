@@ -1,7 +1,9 @@
 namespace GUIPanels
 {
-   public abstract class SelectPanel : VerticalLayout {
-    public SelectPanel(string[] options, int selectedIndex) : base(100) {}
+  public abstract class SelectPanel : VerticalLayout
+  {
+    public Widget Container;
+    public SelectPanel(string[] options, int selectedIndex) : base(100) { }
     bool[] _options;
     public int SelectedIndex
     {
@@ -14,7 +16,8 @@ namespace GUIPanels
         return -1;
       }
     }
-    protected void Construct(string[] options, int selectedIndex, IDrawableComponent component) {
+    protected void Construct(string[] options, int selectedIndex, Widget component)
+    {
       _options = new bool[options.Length];
       System.Diagnostics.Debug.Assert(_options.Length > selectedIndex);
 
@@ -24,7 +27,8 @@ namespace GUIPanels
         component.AddChild(new RadioToggle(option, () =>
         {
           return _options[System.Array.IndexOf(options, option)];
-        }, x => {
+        }, x =>
+        {
           if (x)
           {
             SetActive(System.Array.IndexOf(options, option));
@@ -33,6 +37,7 @@ namespace GUIPanels
         index++;
       }
       AddChild(component);
+      Container = component;
     }
 
     protected void SetActive(int index)

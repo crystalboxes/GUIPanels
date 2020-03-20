@@ -6,8 +6,8 @@ namespace GUIPanels
     public HorizontalGrid InactiveBar { get { return _inactiveBar; } }
     public float SliderHeight
     {
-      get { return _activeBar.Style.Get<float>(Styles.Height); }
-      set { _activeBar.Style.Set(Styles.Height, value); }
+      get { return _activeBar.CurrentStyle.Get<float>(Styles.Height); }
+      set { _activeBar.CurrentStyle.Set(Styles.Height, value); }
     }
     Label _label;
     EmptySpace _activeBar;

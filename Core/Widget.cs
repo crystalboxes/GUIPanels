@@ -4,14 +4,10 @@ namespace GUIPanels
 {
   public abstract class Widget
   {
-    public enum State
-    {
-      Idle, Clicked, Hovered
-    }
+    public enum State { Idle, Clicked, Hovered }
 
     State EventState { get { return _state; } }
     State _state = State.Idle;
-
 
     public Widget()
     {
@@ -21,8 +17,6 @@ namespace GUIPanels
       Style.Set(Styles.Padding, Dim.Zero);
       Style.Set(Styles.Margin, Dim.Zero);
       Style.Set(Styles.Border, Dim.Zero);
-      Style.Set(Styles.FontSize, 10f);
-      Style.Set(Styles.FontColor, Col.black);
     }
 
     public static T New<T>(params object[] list)
@@ -41,6 +35,17 @@ namespace GUIPanels
     public Widget Attach(Widget child)
     {
       AddChild(child);
+      return this;
+    }
+    Tooltip _tooltip;
+    public Widget SetTooltip(string text)
+    {
+      if (_tooltip == null)
+      {
+        _tooltip = new Tooltip(100);
+      }
+      _tooltip.SetText(text);
+      _tooltip.CalculateTextBox();
       return this;
     }
 
@@ -102,12 +107,12 @@ namespace GUIPanels
 
     protected virtual float ContentWidth
     {
-      get { return Style.Get<float>(Styles.Width); }
+      get { return CurrentStyle.Get<float>(Styles.Width); }
     }
 
     protected virtual float ContentHeight
     {
-      get { return Style.Get<float>(Styles.Height); }
+      get { return CurrentStyle.Get<float>(Styles.Height); }
     }
 
     protected virtual float InnerWidth
@@ -133,17 +138,17 @@ namespace GUIPanels
 
     void Recalculate()
     {
-      _position = Style.Position();
-      _margin = Style.Get<Dim>(Styles.Margin);
-      _padding = Style.Get<Dim>(Styles.Padding);
-      _border = Style.Get<Dim>(Styles.Border);
+      _position = CurrentStyle.Position();
+      _margin = CurrentStyle.Get<Dim>(Styles.Margin);
+      _padding = CurrentStyle.Get<Dim>(Styles.Padding);
+      _border = CurrentStyle.Get<Dim>(Styles.Border);
 
       _innerWidth = InnerWidth;
       _innerHeight = InnerHeight;
 
       _contentBox = new Rectangle(ContentPosition.x, ContentPosition.y, _innerWidth, _innerHeight);
 
-      if (!Style.Get<bool>(Styles.Hidden))
+      if (!CurrentStyle.Get<bool>(Styles.Hidden))
       {
         _box = new Rectangle();
         _box.x = Position.x;
@@ -185,20 +190,24 @@ namespace GUIPanels
 
     ElementStyle _style;
 
-    public ElementStyle Style
+    public ElementStyle Style { get { return _style; } }
+    public ElementStyle CurrentStyle
     {
-      get { return _style; }
+      get
+      {
+        if (_state == State.Clicked)
+        {
+          return Style.Clicked as ElementStyle;
+        }
+        if (_state == State.Hovered)
+        {
+          return Style.Hovered as ElementStyle;
+        }
+        return Style;
+      }
     }
-
-    public Widget Parent
-    {
-      get { return _parent; }
-    }
-
-    public List<Widget> Children
-    {
-      get { return _children; }
-    }
+    public Widget Parent { get { return _parent; } }
+    public List<Widget> Children { get { return _children; } }
 
     bool _isThemeApplied;
 
@@ -217,7 +226,7 @@ namespace GUIPanels
         Initialize();
       }
 
-      if (Style.Get<bool>(Styles.Hidden))
+      if (CurrentStyle.Get<bool>(Styles.Hidden))
       {
         return;
       }
@@ -233,10 +242,10 @@ namespace GUIPanels
       contentBox.width += _padding.Left + _padding.Right;
       contentBox.x -= _padding.Left;
       contentBox.y -= _padding.Top;
-      Rendering.DrawRect(contentBox, Style.Get<Col>(Styles.BackgroundColor));
+      Rendering.DrawRect(contentBox, CurrentStyle.Get<Col>(Styles.BackgroundColor));
 
       // Draw border
-      var borderColor = Style.Get<Col>(Styles.BorderColor);
+      var borderColor = CurrentStyle.Get<Col>(Styles.BorderColor);
       float widthWithBorder = _border.Left + InnerWidth + _padding.Left + _border.Right + _padding.Right;
       float heightWithBorder = _border.Top + InnerHeight + _padding.Top + _border.Bottom + _padding.Bottom;
 
@@ -275,6 +284,14 @@ namespace GUIPanels
           drawable.DeferRender();
         }
       }
+
+      if (_shouldShowTooltip)
+      {
+        if (_tooltip != null)
+        {
+          _tooltip.Draw();
+        }
+      }
     }
 
     public virtual void DeferRender()
@@ -287,22 +304,31 @@ namespace GUIPanels
 
     float _mouseDownTime = 0;
     const float clickInterval = 0.3f;
-    bool _mouseEntered = false;
+    bool _mouseEntered = false,
+      _shouldShowTooltip = false;
 
     void UpdateEvents()
     {
       OnUpdate();
+      _shouldShowTooltip = false;
 
       var mousePos = Utils.MousePosition();
       if (Box.Contains(mousePos))
       {
+        _shouldShowTooltip = true;
+        if (_tooltip != null)
+        {
+          _tooltip.Position = mousePos + new Vec2(11, 11);
+        }
         if (!_mouseEntered)
         {
           OnMouseEntered(mousePos.x, mousePos.y);
           _mouseEntered = true;
         }
-
-        _state = State.Hovered;
+        if (_state != State.Clicked)
+        {
+          _state = State.Hovered;
+        }
 
         if (Utils.GetMouseDown())
         {
@@ -313,6 +339,10 @@ namespace GUIPanels
       }
       else
       {
+        if (_state != State.Clicked)
+        {
+          _state = State.Idle;
+        }
         _mouseEntered = false;
       }
 

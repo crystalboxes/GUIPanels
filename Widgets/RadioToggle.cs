@@ -12,7 +12,7 @@ namespace GUIPanels
 
     public RadioToggle(string title, System.Func<bool> getValueCallback = null, System.Action<bool> setValueCallback = null)
     {
-      var height = Utils.CalcSize("a", Style).y;
+      var height = Utils.CalcSize("a", CurrentStyle).y;
       var horizontal = new HorizontalLayout();
 
       _value = new ValueComponent<bool>(getValueCallback, setValueCallback);
@@ -34,7 +34,7 @@ namespace GUIPanels
     {
       base.Render();
       var box = _filled.ContentBox;
-      float w = _filled.Style.Get<float>(Styles.Width);
+      float w = _filled.CurrentStyle.Get<float>(Styles.Width);
       float radius = w * 0.5f;
 
       var center = new Vec2(box.x + radius, box.y + radius);

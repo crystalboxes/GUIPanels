@@ -1,6 +1,6 @@
 namespace GUIPanels
 {
-  public class HorizontalGrid : Widget
+  public class HorizontalGrid : LayoutBase
   {
     float ChildWidth { get { return InnerWidth / (float)Children.Count; } }
 

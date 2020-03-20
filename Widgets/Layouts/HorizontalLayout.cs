@@ -1,6 +1,6 @@
 namespace GUIPanels
 {
-  public class HorizontalLayout : Widget
+  public class HorizontalLayout : LayoutBase
   {
     bool _useRightAlignment;
     public HorizontalLayout(bool useRightAlignment = false) : base()

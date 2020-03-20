@@ -4,6 +4,8 @@ namespace GUIPanels
   {
     public abstract void SetPixel(int x, int y, Col color);
     public abstract void Apply();
+    public abstract float Width { get; }
+    public abstract float Height { get; }
   }
   public static partial class Utils
   {

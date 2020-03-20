@@ -22,7 +22,7 @@ namespace GUIPanels
     public Col HandleColor { get; set; }
     public Col HeaderColor { get; set; }
 
-    HeaderComponent _header;
+    HeaderWidget _header;
     EmptySpace _pickerBlock;
     EmptySpace _hueSlider;
     EmptySpace _colorDisplayBlock;
@@ -61,7 +61,7 @@ namespace GUIPanels
 
 
       // Inititialize texture end...
-      _header = new HeaderComponent(Title, x =>
+      _header = new HeaderWidget(Title, x =>
       {
         if (!x)
         {

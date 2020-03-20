@@ -27,7 +27,7 @@ namespace GUIPanels
     public class ClickableLable : HorizontalGrid
     {
       System.Action<string> _onClickCallback;
-      public Col HoveredColor { get; set; }
+      // public Col HoveredColor { get; set; }
       Col _prevColor;
       Label _label;
       public ClickableLable(string title, System.Action<string> onClickCallback) : base()
@@ -43,18 +43,18 @@ namespace GUIPanels
         Utils.Event.OnClick.Use();
         _onClickCallback(_label.Title);
       }
-      protected override void OnUpdate()
-      {
-        base.OnUpdate();
-        if (Box.Contains(Utils.MousePosition()))
-        {
-          Style.Set<Col>(Styles.BackgroundColor, HoveredColor);
-        }
-        else
-        {
-          Style.Set<Col>(Styles.BackgroundColor, new Col(0, 0, 0, 0));
-        }
-      }
+      // protected override void OnUpdate()
+      // {
+      //   base.OnUpdate();
+      //   if (Box.Contains(Utils.MousePosition()))
+      //   {
+      //     Style.Set<Col>(Styles.BackgroundColor, HoveredColor);
+      //   }
+      //   else
+      //   {
+      //     Style.Set<Col>(Styles.BackgroundColor, new Col(0, 0, 0, 0));
+      //   }
+      // }
     }
 
     public DropdownList(string[] options, int selectedIndex, float width = 100) : base(width)

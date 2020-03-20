@@ -1,10 +1,10 @@
 namespace GUIPanels
 {
-  public class HeaderComponent : VerticalLayout
+  public class HeaderWidget : VerticalLayout
   {
     public bool IsCollapsed { get { return !_button.On; } }
     ToggleButton _button;
-    public HeaderComponent(string title, System.Action<bool> onToggleClicked) : base(100)
+    public HeaderWidget(string title, System.Action<bool> onToggleClicked) : base(100)
     {
       var layout = new HorizontalGrid();
       var hL0 = new HorizontalLayout();

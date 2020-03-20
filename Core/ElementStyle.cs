@@ -20,12 +20,24 @@ namespace GUIPanels
   public enum HorizontalAlignment { Center, Left, Right }
   public class ElementStyleBase
   {
-    ////////////////////////
     public ElementStyleBase SetHidden(bool value = true)
     {
       Set(Styles.Hidden, value);
       return this;
     }
+    public ElementStyleBase FontColor(Col color)
+    {
+      Set(Styles.FontColor, color);
+      return this;
+    }
+
+    public ElementStyleBase FontSize(float size)
+    {
+      Set(Styles.FontSize, size);
+      return this;
+    }
+
+
     public ElementStyleBase Font(float size)
     {
       return Font(size, Col.black);
@@ -44,6 +56,11 @@ namespace GUIPanels
       Set(Styles.Position, pos);
       return this;
     }
+    public ElementStyleBase Position(float x, float y)
+    {
+      Set(Styles.Position, new Vec2(x, y));
+      return this;
+    }
 
     public Col Background() { return Get<Col>(Styles.BackgroundColor); }
     public ElementStyleBase Background(Col color)
@@ -51,6 +68,7 @@ namespace GUIPanels
       Set(Styles.BackgroundColor, color);
       return this;
     }
+
     public Dim Padding() { return Get<Dim>(Styles.Padding); }
     public ElementStyleBase Padding(float dim) { Set(Styles.Padding, new Dim(dim)); return this; }
     public ElementStyleBase Padding(Dim dim) { Set(Styles.Padding, dim); return this; }
@@ -65,6 +83,12 @@ namespace GUIPanels
 
     public Dim Border() { return Get<Dim>(Styles.Border); }
     public Col BorderColor() { return Get<Col>(Styles.BorderColor); }
+    public ElementStyleBase Border(float dim, Col color)
+    {
+      Set(Styles.Border, new Dim(dim));
+      Set(Styles.BorderColor, color);
+      return this;
+    }
     public ElementStyleBase Border(Col color, float dim = 1)
     {
       Set(Styles.Border, new Dim(dim));
@@ -79,12 +103,60 @@ namespace GUIPanels
     }
 
     ////////////////////////
+    ElementStyleBase _baseStyle;
+    ElementStyleBase _clicked, _hovered;
+    public ElementStyleBase Clicked
+    {
+      get
+      {
+        if (_baseStyle != null)
+        {
+          return null;
+        }
+        if (_clicked == null)
+        {
+          _clicked = new ElementStyle(Owner);
+          _clicked._baseStyle = this;
+        }
+        return _clicked;
+      }
+    }
+
+    public ElementStyleBase Hovered
+    {
+      get
+      {
+        if (_baseStyle != null)
+        {
+          return null;
+        }
+        if (_hovered == null)
+        {
+          _hovered = new ElementStyle(Owner);
+          _hovered._baseStyle = this;
+        }
+        return _hovered;
+      }
+    }
+
+    /////////////
     public ElementStyleBase(Widget owner)
     {
       Owner = owner;
     }
     public Widget Owner { get; set; }
-    ElementStyleBase ParentStyle { get { return Owner == null ? null : Owner.Parent == null ? null : Owner.Parent.Style; } }
+    protected ElementStyleBase ParentStyle
+    {
+      get
+      {
+        if (_baseStyle == null)
+        {
+          return Owner == null ? null : Owner.Parent == null ? null : Owner.Parent.CurrentStyle;
+        }
+
+        return _baseStyle;
+      }
+    }
     Dictionary<string, object> _properties = new Dictionary<string, object>();
     public virtual ElementStyleBase Set<T>(string propName, T value)
     {
@@ -100,6 +172,10 @@ namespace GUIPanels
     {
       if (!_properties.ContainsKey(propName))
       {
+        if (_baseStyle != null)
+        {
+          return _baseStyle.Get<T>(propName);
+        }
         if (ParentStyle == null)
         {
           return default(T);
@@ -117,6 +193,10 @@ namespace GUIPanels
       }
       return default(T);
     }
+    public bool Exists(string propName)
+    {
+      return _properties.ContainsKey(propName);
+    }
   }
   public class ElementStyle : ElementStyleBase
   {
@@ -133,26 +213,48 @@ namespace GUIPanels
       base.Set(propName, value);
       if (propName == Styles.FontSize)
       {
+        if (_fontStyle == null) _fontStyle = MakeFontStyle();
         object val = value;
-        FontStyle.FontSize = (float)val;
+        _fontStyle.FontSize = (float)val;
       }
 
       if (propName == Styles.FontColor)
       {
+        if (_fontStyle == null) _fontStyle = MakeFontStyle();
         object val = value;
-        FontStyle.FontColor = (Col)val;
+        _fontStyle.FontColor = (Col)val;
       }
       return this;
     }
+
+    Style MakeFontStyle()
+    {
+      var fontStyle = Utils.MakeStyle();
+      fontStyle.FontColor = Get<Col>(Styles.FontColor);
+      fontStyle.FontSize = Get<float>(Styles.FontSize);
+      return fontStyle;
+    }
+
     // this is specific to font rendering
     Style _fontStyle;
-    Style FontStyle
+    public Style FontStyle
     {
       get
       {
         if (_fontStyle == null)
         {
-          _fontStyle = Utils.MakeStyle();
+          if (Exists(Styles.FontColor) && Exists(Styles.FontSize))
+          {
+            _fontStyle = MakeFontStyle();
+          }
+          else if (ParentStyle != null)
+          {
+            return (ParentStyle as ElementStyle).FontStyle;
+          }
+          else
+          {
+            return null;
+          }
         }
         return _fontStyle;
       }

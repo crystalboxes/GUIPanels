@@ -88,6 +88,9 @@ namespace GUIPanels
   {
     public class UnityTexture : GUIPanels.Texture
     {
+      public override float Width { get { return Tex.width; } }
+      public override float Height { get { return Tex.height; } }
+
       public override void SetPixel(int x, int y, Col color)
       {
         Tex.SetPixel(x, y, color);
@@ -103,6 +106,19 @@ namespace GUIPanels
       public UnityTexture(int width, int height)
       {
         _texture = new Texture2D(width, height, TextureFormat.ARGB32, false, false);
+      }
+      public UnityTexture(Texture2D tex)
+      {
+        _texture = tex;
+      }
+      public static implicit operator UnityEngine.Texture2D(UnityTexture tex)
+      {
+        return tex.Tex;
+      }
+
+      public static explicit operator UnityTexture(Texture2D tex)
+      {
+        return new UnityTexture(tex);
       }
     }
     public class UnityStyle : Style

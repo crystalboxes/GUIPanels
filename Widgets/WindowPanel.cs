@@ -3,17 +3,17 @@ namespace GUIPanels
   public class WindowPanel : VerticalLayout
   {
     public VerticalLayout Container { get { return _container; } }
-    public HeaderComponent Header { get { return _header; } }
+    public HeaderWidget Header { get { return _header; } }
     public float HeaderOffset
     {
-      get { return Header.Style.Get<Dim>(Styles.Margin).Bottom; }
-      set { Header.Style.Set<Dim>(Styles.Margin, Dim.bottom * value); }
+      get { return Header.CurrentStyle.Get<Dim>(Styles.Margin).Bottom; }
+      set { Header.CurrentStyle.Set<Dim>(Styles.Margin, Dim.bottom * value); }
     }
-    HeaderComponent _header;
+    HeaderWidget _header;
     VerticalLayout _container;
     public WindowPanel(string title, float width = 165) : base(width)
     {
-      _header = new HeaderComponent(title,
+      _header = new HeaderWidget(title,
         x => _container.Style.Set(Styles.Hidden, !x));
       _container = new VerticalLayout(width);
       base.AddChild(_header);

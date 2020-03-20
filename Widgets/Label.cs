@@ -17,7 +17,7 @@ namespace GUIPanels
     {
       get
       {
-        return CalculatedTextSize.y + Style.Get<float>(Styles.LineHeight);
+        return CalculatedTextSize.y + CurrentStyle.Get<float>(Styles.LineHeight);
       }
     }
     protected override float ContentWidth
@@ -36,14 +36,14 @@ namespace GUIPanels
       }
     }
 
-    Vec2 CalculatedTextSize { get { return Utils.CalcSize(Text, Style); } }
+    Vec2 CalculatedTextSize { get { return Utils.CalcSize(Text, CurrentStyle); } }
 
     protected override void Render()
     {
       Rendering.DrawText(new Rectangle(
         ContentPosition.x,
         ContentPosition.y,
-        InnerWidth, Style.Get<float>(Styles.FontSize)), Text, Style);
+        InnerWidth, CurrentStyle.Get<float>(Styles.FontSize)), Text, CurrentStyle);
     }
   }
 }

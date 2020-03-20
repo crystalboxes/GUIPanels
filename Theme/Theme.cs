@@ -27,9 +27,9 @@ namespace GUIPanels
     }
     public Theme()
     {
-      Add<HeaderComponent>(h =>
+      Add<HeaderWidget>(h =>
       {
-        var c = h as HeaderComponent;
+        var c = h as HeaderWidget;
         c.Style.Set(Styles.BackgroundColor, new Col(0.5f, 0.5f, 0.5f, 1));
         c.Style.Set(Styles.Height, 12f);
         c.Style.Set(Styles.Padding, Dim.left * 2 + Dim.bottom * 1 + Dim.top * 2);
@@ -48,9 +48,12 @@ namespace GUIPanels
 
       Add<Button>(h =>
       {
-        var c = h as Button;
-        c.ClickedColor = Col.black;
-        c.ButtonColor = Col.white;
+        h.Style
+          .Background(Col.white)
+          .FontColor(Col.black)
+        .Hovered
+          .Background(Col.black)
+          .FontColor(Col.white);
       });
 
       Add<ColorPicker>(h =>
@@ -83,6 +86,14 @@ namespace GUIPanels
         c.FilledColor = Col.white;
       });
 
+      Add<CircleSlider>(h =>
+      {
+        var c = h as CircleSlider;
+        c.Radius = 25f;
+        c.EmptyColor = Col.black;
+        c.FilledColor = Col.white;
+      });
+
       Add<VerticalSlider>(h =>
       {
         var c = h as VerticalSlider;
@@ -108,8 +119,8 @@ namespace GUIPanels
 
       Add<DropdownList.ClickableLable>(a =>
       {
-        var c = a as DropdownList.ClickableLable;
-        c.HoveredColor = new Col(0.5f, 0.5f, 0.5f, 0.45f);
+        a.Style.Hovered
+          .Background(new Col(0.5f, 0.5f, 0.5f, 0.45f));
       });
 
       Add<SelectVertical>(a =>

@@ -4,7 +4,7 @@ namespace GUIPanels
 {
   public class ImageWidget : EmptySpace
   {
-    Texture _tex;
+    protected Texture _tex;
     bool _fillsContentBox;
 
     protected Rectangle ImageBox
@@ -55,9 +55,20 @@ namespace GUIPanels
       set { _valueComponent.Value = value; }
     }
     ValueComponent<Vec2> _valueComponent;
-    Func<Col> _setValueCallback;
-    public ImageSampler(Texture texture, Func<Col> setValueCallback, Func<Vec2> getSamplerPostionCallback, Action<Vec2> setSamplerPostionCallback, float width = 0, float height = 0) : base(texture, width, height)
+    Action<Col> _setValueCallback;
+    Vec2 _pos;
+    public ImageSampler(Texture texture,
+     float width = 0, float height = 0, Action<Col> setValueCallback = null,
+     Func<Vec2> getSamplerPostionCallback = null, Action<Vec2> setSamplerPostionCallback = null) : base(texture, width, height)
     {
+      if (getSamplerPostionCallback == null)
+      {
+        getSamplerPostionCallback = () => _pos;
+      }
+      if (setSamplerPostionCallback == null)
+      {
+        setSamplerPostionCallback = x => _pos = x;
+      }
       _valueComponent = new ValueComponent<Vec2>(getSamplerPostionCallback, setSamplerPostionCallback);
       _setValueCallback = setValueCallback;
     }
@@ -67,17 +78,58 @@ namespace GUIPanels
       base.Render();
       var box = ImageBox;
 
-      const float emptySpace = 5;
+      const float emptySpace = 3;
 
       var pt = new Vec2(Value.x * box.width + box.x, Value.y * box.height + box.y);
-      Rendering.DrawLine(new Vec2(pt.x, box.y), new Vec2(pt.x, pt.y - emptySpace), LinesWidth, LinesColor);
-      Rendering.DrawLine(new Vec2(pt.x, box.y + box.height), new Vec2(pt.x, pt.y + emptySpace), LinesWidth, LinesColor);
 
-      Rendering.DrawLine(new Vec2(box.x, pt.y), new Vec2(pt.x - emptySpace, pt.y), LinesWidth, LinesColor);
-      Rendering.DrawLine(new Vec2(box.x + box.width, pt.y), new Vec2(pt.x + emptySpace, pt.y), LinesWidth, LinesColor);
+      Rendering.DrawLine(new Vec2(pt.x, box.y),
+        new Vec2(pt.x, pt.y - emptySpace < box.y ? box.y : pt.y - emptySpace), LinesWidth, LinesColor);
+      Rendering.DrawLine(new Vec2(box.x, pt.y),
+        new Vec2(pt.x - emptySpace < box.x ? box.x : pt.x - emptySpace, pt.y), LinesWidth, LinesColor);
+
+      Rendering.DrawLine(new Vec2(pt.x, box.y + box.height),
+        new Vec2(pt.x,
+          pt.y + emptySpace > box.y + box.height
+            ? box.y + box.height
+            : pt.y + emptySpace
+        ), LinesWidth, LinesColor);
+
+      Rendering.DrawLine(new Vec2(box.x + box.width, pt.y),
+        new Vec2(
+          pt.x + emptySpace > box.x + box.width
+            ? box.x + box.width
+            : pt.x + emptySpace, pt.y
+        ), LinesWidth, LinesColor);
     }
 
-    // TODO dragging
-    
+    bool _isDragging = false;
+    protected override void OnDraggingStart(float x, float y)
+    {
+      base.OnDraggingStart(x, y);
+      _isDragging = true;
+    }
+    protected override void OnMouseUp()
+    {
+      _isDragging = false;
+    }
+
+    protected override void OnUpdate()
+    {
+      if (_isDragging)
+      {
+        var mousePos = Utils.MousePosition();
+        var pos = ContentPosition;
+        var uv = (mousePos - pos) / new Vec2(ImageWidth, ImageHeight);
+        uv.x = Utils.Clamp01(uv.x);
+        uv.y = Utils.Clamp01(uv.y);
+
+        _sampledColor = _tex.GetPixel((int)(uv.x * _tex.Width), (int)((1 - uv.y) * _tex.Height));
+        if (_setValueCallback != null)
+        {
+          _setValueCallback(_sampledColor);
+        }
+        Value = uv;
+      }
+    }
   }
 }

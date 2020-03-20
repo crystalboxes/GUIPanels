@@ -6,6 +6,7 @@ namespace GUIPanels
     public abstract void Apply();
     public abstract float Width { get; }
     public abstract float Height { get; }
+    public abstract Col GetPixel(int x, int y);
   }
   public static partial class Utils
   {
@@ -153,6 +154,10 @@ namespace GUIPanels
     public static Vec2 operator *(Vec2 a, float b)
     {
       return new Vec2(a.x * b, a.y * b);
+    }
+    public static Vec2 operator /(Vec2 a, Vec2 b)
+    {
+      return new Vec2(a.x / b.x, a.y / b.y);
     }
     public static implicit operator Vec2(UnityEngine.Vector2 rhs)
     {

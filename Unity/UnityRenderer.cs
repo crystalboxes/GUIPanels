@@ -90,6 +90,11 @@ namespace GUIPanels
     {
       public override float Width { get { return Tex.width; } }
       public override float Height { get { return Tex.height; } }
+      public override Col GetPixel(int x, int y)
+      {
+        return Tex.GetPixel(x, y);
+      }
+
 
       public override void SetPixel(int x, int y, Col color)
       {

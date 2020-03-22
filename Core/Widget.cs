@@ -2,6 +2,10 @@ using System.Collections.Generic;
 
 namespace GUIPanels
 {
+  public enum EventType
+  {
+    Click, DoubleClick, MouseUp
+  }
   public abstract class Widget
   {
     public enum State { Idle, Clicked, Hovered }
@@ -304,9 +308,33 @@ namespace GUIPanels
 
     float _mouseDownTime = 0;
     const float clickInterval = 0.3f;
+    const float doubleClickInterval = 0.35f;
     bool _mouseEntered = false,
       _shouldShowTooltip = false;
 
+
+    Dictionary<EventType, List<System.Action>> _eventListeners = new Dictionary<EventType, List<System.Action>>();
+    public Widget AddEventListener(EventType eventType, System.Action action)
+    {
+      if (!_eventListeners.ContainsKey(eventType))
+      {
+        _eventListeners.Add(eventType, new List<System.Action>());
+      }
+      _eventListeners[eventType].Add(action);
+      return this;
+    }
+    void DispatchEvents(EventType eventType)
+    {
+      if (!_eventListeners.ContainsKey(eventType))
+      {
+        return;
+      }
+      foreach (var e in _eventListeners[eventType])
+      {
+        e();
+      }
+    }
+    float lastClickTime;
     void UpdateEvents()
     {
       OnUpdate();
@@ -352,18 +380,28 @@ namespace GUIPanels
       if (MouseUp)
       {
         _state = State.Idle;
-
+        DispatchEvents(EventType.MouseUp);
         OnMouseUp();
         if ((Utils.Time - _mouseDownTime) < clickInterval)
         {
-          if (!Utils.Event.OnClick.Used)
+          DispatchEvents(EventType.Click);
+          OnClick();
+          _clicks++;
+          if (_clicks == 2)
           {
-            OnClick();
+            _clicks = 0;
+            DispatchEvents(EventType.DoubleClick);
+            OnDoubleClick();
           }
+          lastClickTime = Utils.Time;
         }
       }
+      if (Utils.Time - lastClickTime > doubleClickInterval)
+      {
+        _clicks = 0;
+      }
     }
-
+    int _clicks = 0;
 
     bool _mouseUp;
     bool _mouseUpPrev;
@@ -390,6 +428,10 @@ namespace GUIPanels
     }
 
     protected virtual void OnClick()
+    {
+    }
+
+    protected virtual void OnDoubleClick()
     {
     }
   }

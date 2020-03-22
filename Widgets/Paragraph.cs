@@ -25,11 +25,12 @@ namespace GUIPanels
     }
 
     float _defaultWidth;
+    int _calculatedWidth;
+
     public Widget CalculateTextBox()
     {
       const float widthMultiplier = 1f;
       Children.Clear();
-      Style.Set<float>(Styles.Width, _defaultWidth);
       float w = InnerWidth * widthMultiplier;
       // split by lines
       var lines = _text.Split('\n');
@@ -59,7 +60,16 @@ namespace GUIPanels
         Attach(new Label(currentLabelText));
         Style.Set<float>(Styles.Width, Utils.CalcSize(currentLabelText, Style).x);
       }
+      _calculatedWidth = (int)InnerWidth;
       return this;
+    }
+    protected override void Render()
+    {
+      if (_calculatedWidth != (int)InnerWidth)
+      {
+        CalculateTextBox();
+      }
+      base.Render();
     }
   }
 }

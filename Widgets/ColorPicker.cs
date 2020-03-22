@@ -61,7 +61,8 @@ namespace GUIPanels
 
 
       // Inititialize texture end...
-      _header = new HeaderWidget(Title, x =>
+      _header = new HeaderWidget(Title);
+      _header.SetToggleCallback(x =>
       {
         if (!x)
         {

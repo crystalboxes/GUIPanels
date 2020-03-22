@@ -88,21 +88,54 @@ namespace GUIPanels
   {
     public class UnityTexture : GUIPanels.Texture
     {
-      public override float Width { get { return Tex.width; } }
-      public override float Height { get { return Tex.height; } }
+      public override float Width
+      {
+        get
+        {
+          if (Tex == null)
+          {
+            return 1;
+          }
+          return Tex.width;
+        }
+      }
+      public override float Height
+      {
+        get
+        {
+
+          if (Tex == null)
+          {
+            return 1;
+          }
+          return Tex.height;
+        }
+      }
       public override Col GetPixel(int x, int y)
       {
-        return Tex.GetPixel(x, y);
+        if (Tex != null)
+        {
+          return Tex.GetPixel(x, y);
+        }
+        return Col.black;
       }
 
 
       public override void SetPixel(int x, int y, Col color)
       {
+        if (Tex == null)
+        {
+          return;
+        }
         Tex.SetPixel(x, y, color);
       }
 
       public override void Apply()
       {
+        if (Tex == null)
+        {
+          return;
+        }
         Tex.Apply();
       }
 
@@ -168,7 +201,12 @@ namespace GUIPanels
     {
       public override void DrawTexture(Rectangle rectangle, Texture texture)
       {
-        GUI.DrawTexture(Utils.ToRect(rectangle), (texture as UnityTexture).Tex);
+        var t = (texture as UnityTexture).Tex;
+        if (t == null)
+        {
+          return;
+        }
+        GUI.DrawTexture(Utils.ToRect(rectangle), t);
       }
 
       public override void DrawText(Rectangle rectangle, string text, Style style)

@@ -25,23 +25,47 @@ namespace GUIPanels
     }
 
     float _min, _max;
-
+    ValueLabel _valueLabel;
+    VerticalLayout _verticalLayout;
+    bool _isLabelUnderSlider;
+    public void BringLabelToBottom(bool value = true)
+    {
+      _isLabelUnderSlider = value;
+      BuildLayout();
+    }
     public Slider(string title, System.Func<float> getValueCallback = null, System.Action<float> setValueCallback = null, float min = 0, float max = 1, float width = 100f) : base(width)
     {
       _valueComponent = new ValueComponent<float>(getValueCallback, setValueCallback);
-      AddChild(new ValueLabel(title, () => string.Format("{0:0.00}", Value)));
       _max = max;
       _min = min;
-      var verticalLayout = new VerticalLayout();
-      _inactiveBar = new HorizontalGrid();
-      var horizontalLayout = new HorizontalLayout();
-      _activeBar = new EmptySpace();
-      _inactiveBar.Attach(horizontalLayout);
-      verticalLayout.Attach(_inactiveBar);
-      horizontalLayout.Attach(_activeBar);
 
+      _inactiveBar = new HorizontalGrid();
+      _activeBar = new EmptySpace();
+      _verticalLayout = new VerticalLayout();
+      _valueLabel = new ValueLabel(title, () => string.Format("{0:0.00}", Value));
       Value = getValueCallback();
-      AddChild(verticalLayout);
+
+      _verticalLayout.Attach(
+        _inactiveBar.Attach(
+          new HorizontalLayout().Attach(
+            _activeBar
+          )
+        )
+      );
+      BuildLayout();
+    }
+
+    void BuildLayout()
+    {
+      Children.Clear();
+      if (_isLabelUnderSlider)
+      {
+        Attach(_verticalLayout, _valueLabel);
+      }
+      else
+      {
+        Attach(_valueLabel, _verticalLayout);
+      }
     }
     ValueComponent<float> _valueComponent;
     protected override void OnUpdate()

@@ -18,6 +18,12 @@ namespace GUIPanels
     public static string Height { get { return "height"; } }
   }
   public enum HorizontalAlignment { Center, Left, Right }
+  public struct FontStyle
+  {
+    public Col Color;
+    public float Size;
+  }
+
   public class ElementStyleBase
   {
     public ElementStyleBase SetHidden(bool value = true)
@@ -37,6 +43,12 @@ namespace GUIPanels
       return this;
     }
 
+    public ElementStyleBase Font(FontStyle style)
+    {
+      Set(Styles.FontColor, style.Color);
+      Set(Styles.FontSize, style.Size);
+      return this;
+    }
 
     public ElementStyleBase Font(float size)
     {

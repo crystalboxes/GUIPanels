@@ -1,9 +1,51 @@
+using System;
 using System.Collections.Generic;
 
 namespace GUIPanels
 {
-  public class Theme
+  public abstract class Theme
   {
+    public virtual FontStyle FontSmall
+    {
+      get
+      {
+        return new FontStyle()
+        {
+          Size = FontSizeSmall,
+          Color = FontColor
+        };
+      }
+    }
+    public virtual FontStyle FontMedium
+    {
+      get
+      {
+        return new FontStyle()
+        {
+          Size = FontSizeMedium,
+          Color = FontColor
+        };
+      }
+    }
+    public virtual FontStyle FontLarge
+    {
+      get
+      {
+        return new FontStyle()
+        {
+          Size = FontSizeLarge,
+          Color = FontColor
+        };
+      }
+    }
+
+    public abstract Col PrimaryColor { get; }
+    public abstract Col SecondaryColor { get; }
+
+    public abstract float FontSizeLarge { get; }
+    public abstract float FontSizeMedium { get; }
+    public abstract float FontSizeSmall { get; }
+    public abstract Col FontColor { get; }
     static Theme _current;
     public static Theme Current
     {
@@ -11,7 +53,7 @@ namespace GUIPanels
       {
         if (_current == null)
         {
-          _current = new Theme();
+          _current = new DefaultTheme();
         }
         return _current;
       }
@@ -20,131 +62,42 @@ namespace GUIPanels
 
     public void Apply(Widget c)
     {
-      if (_styles.ContainsKey(c.GetType()))
+      Apply(c, c.GetType());
+    }
+
+    public void Apply(Widget c, System.Type widgetType)
+    {
+      if (_styles.ContainsKey(widgetType))
       {
-        _styles[c.GetType()](c);
+        _styles[widgetType](c);
       }
     }
+
+    protected System.Action<Widget> GetAction<T>()
+    {
+      if (_styles.ContainsKey(typeof(T)))
+      {
+        return _styles[typeof(T)];
+      }
+      return null;
+    }
+
+    protected System.Action<Widget> GetAction(System.Type widgetType)
+    {
+      if (_styles.ContainsKey(widgetType))
+      {
+        return _styles[widgetType];
+      }
+      return null;
+    }
+
     public Theme()
     {
-      Add<HeaderWidget>(h =>
-      {
-        var c = h as HeaderWidget;
-        c.Style.Set(Styles.BackgroundColor, new Col(0.5f, 0.5f, 0.5f, 1));
-        c.Style.Set(Styles.Height, 12f);
-        c.Style.Set(Styles.Padding, Dim.left * 2 + Dim.bottom * 1 + Dim.top * 2);
-        c.Style.Set(Styles.Margin, Dim.bottom * 4);
-      });
+    }
 
-      Add<DropdownList>(h =>
-      {
-        var c = h as DropdownList;
-        c.Style.Set<Col>(Styles.BackgroundColor, Col.black);
-        c.ActiveLabel.Style.Set<Col>(Styles.FontColor, Col.white);
-        c.Triangle.Style.Set<Dim>(Styles.Padding, new Dim(3f));
-        c.Triangle.Color = Col.white;
-        c.OpenedBox.Style.Set(Styles.BackgroundColor, Col.white);
-      });
-
-      Add<Button>(h =>
-      {
-        h.Style
-          .Background(Col.white)
-          .FontColor(Col.black)
-        .Hovered
-          .Background(Col.black)
-          .FontColor(Col.white);
-      });
-
-      Add<ColorPicker>(h =>
-      {
-        var c = h as ColorPicker;
-        c.HandleColor = Col.white;
-        c.HeaderColor = new Col(.5f, .5f, .5f, 1);
-        c.ColorDisplayWidth = 10f;
-        c.HueSlider.Style.Set(Styles.Height, 10f);
-
-        c.PickerhandleSize = 10;
-        c.HueSliderHandleWidth = 6;
-        c.HandleBorderWidth = 1;
-      });
-
-      Add<RadioToggle>(h =>
-      {
-        var c = h as RadioToggle;
-        c.PrimaryColor = Col.black;
-        c.SecondaryColor = Col.white;
-        c.CheckedRadiusRatio = 0.5f;
-      });
-
-      Add<RotarySlider>(h =>
-      {
-        var c = h as RotarySlider;
-        c.Radius = 25f;
-        c.Width = 9f;
-        c.EmptyColor = Col.black;
-        c.FilledColor = Col.white;
-      });
-
-      Add<CircleSlider>(h =>
-      {
-        var c = h as CircleSlider;
-        c.Radius = 25f;
-        c.EmptyColor = Col.black;
-        c.FilledColor = Col.white;
-      });
-
-      Add<VerticalSlider>(h =>
-      {
-        var c = h as VerticalSlider;
-        c.InactiveBar.Style.Set(Styles.BackgroundColor, Col.black);
-        c.ActiveBar.Style.Set(Styles.BackgroundColor, Col.white);
-        c.Width = 20f;
-      });
-
-      Add<Slider>(h =>
-      {
-        var c = h as Slider;
-        c.InactiveBar.Style.Set(Styles.BackgroundColor, Col.black);
-        c.ActiveBar.Style.Set(Styles.BackgroundColor, Col.white);
-        c.SliderHeight = 10f;
-      });
-
-      Add<TextField>(h =>
-      {
-        var c = h as TextField;
-        c.PrimaryColor = Col.white;
-        c.SecondaryColor = Col.black;
-      });
-
-      Add<DropdownList.ClickableLable>(a =>
-      {
-        a.Style.Hovered
-          .Background(new Col(0.5f, 0.5f, 0.5f, 0.45f));
-      });
-
-      Add<SelectVertical>(a =>
-      {
-        var c = a as SelectVertical;
-        c.Container.SetChildStyle = x => x.Style.Set(Styles.Margin, Dim.bottom * 3);
-      });
-
-      Add<ToggleButton>(x =>
-      {
-        var c = x as ToggleButton;
-        c.Style.Set(Styles.Margin, Dim.right * 2);
-      });
-
-      Add<WindowPanel>(w =>
-      {
-        var c = w as WindowPanel;
-        c.Container.Style.Set(Styles.BackgroundColor, new Col(1, 1, 1, .55f));
-        c.HeaderOffset = 4;
-        c.Container.Style.Set("background-color", new Col(1, 1, 1, .4f));
-        c.Container.Style.Set(Styles.Border, new Dim(1));
-        c.Container.Style.Set(Styles.BorderColor, new Col(1, 1, 1, .22f));
-        c.Container.Style.Set(Styles.Padding, Dim.bottom * 5 + Dim.left * 3 + Dim.right * 4);
-      });
+    protected void Add(System.Action<Widget> style, System.Type widgetType)
+    {
+      _styles[widgetType] = style;
     }
 
     protected void Add<T>(System.Action<Widget> style)

@@ -4,8 +4,8 @@ namespace GUIPanels
   {
     public LayoutBase() : base()
     {
-      Style.Set(Styles.FontSize, 10f);
-      Style.Set(Styles.FontColor, Col.black);
+      Theme.Current.Apply(this, typeof(LayoutBase));
+
     }
   }
 }

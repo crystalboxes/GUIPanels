@@ -1,27 +1,32 @@
 namespace GUIPanels
 {
+
   public class WindowPanel : VerticalLayout
   {
     public VerticalLayout Container { get { return _container; } }
-    public HeaderWidget Header { get { return _header; } }
+    public HeaderBase Header { get { return _header; } }
     public float HeaderOffset
     {
       get { return Header.CurrentStyle.Get<Dim>(Styles.Margin).Bottom; }
       set { Header.CurrentStyle.Set<Dim>(Styles.Margin, Dim.bottom * value); }
     }
-    HeaderWidget _header;
+    HeaderBase _header;
     VerticalLayout _container;
-    public WindowPanel(string title, float width = 165) : base(width)
+    public WindowPanel(string title = "", float width = 165, System.Type headerType = null) : base(width)
     {
-      _header = new HeaderWidget(title,
-        x => _container.Style.Set(Styles.Hidden, !x));
+      if (headerType == null)
+      {
+        headerType = typeof(HeaderWidget);
+      }
+      _header = (HeaderBase)System.Activator.CreateInstance(headerType, title);
+      _header.SetToggleCallback(x => _container.Style.Set(Styles.Hidden, !x));
       _container = new VerticalLayout(width);
       base.AddChild(_header);
       base.AddChild(_container);
     }
     protected override void AddChild(Widget child)
     {
-      _container.Attach(child);
+      _container.Attach(new HorizontalGrid().Attach(child));
     }
 
     protected override void ApplyChildStyles()

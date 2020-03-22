@@ -12,15 +12,11 @@ namespace GUIPanels
 
     public RadioToggle(string title, System.Func<bool> getValueCallback = null, System.Action<bool> setValueCallback = null)
     {
-      var height = Utils.CalcSize("a", CurrentStyle).y;
       var horizontal = new HorizontalLayout();
-
       _value = new ValueComponent<bool>(getValueCallback, setValueCallback);
-      _filled = new EmptySpace(height, height);
+      _filled = new EmptySpace();
       _filled.Style.Set(Styles.Margin, Dim.right * 5);
-
       horizontal.Attach(_filled, new Label(title));
-
       AddChild(horizontal);
     }
 
@@ -30,8 +26,14 @@ namespace GUIPanels
       _value.Value = !_value.Value;
     }
 
+    bool _initialized = false;
     protected override void Render()
     {
+      if (!_initialized)
+      {
+        _filled.Width = _filled.Height = Utils.CalcSize("a", CurrentStyle).y;
+        _initialized = true;
+      }
       base.Render();
       var box = _filled.ContentBox;
       float w = _filled.CurrentStyle.Get<float>(Styles.Width);

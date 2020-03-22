@@ -22,7 +22,6 @@ namespace GUIPanels
         comp.Draw();
       }
     }
-
     protected override float ContentHeight
     {
       get

@@ -172,7 +172,7 @@ namespace GUIPanels
     {
       this.x = x; this.y = y; this.width = w; this.height = h;
     }
-
+    public Vec2 Size { get { return new Vec2(width, height); } }
     public Vec2 Position { get { return new Vec2(x, y); } }
 
     public bool Contains(Vec2 v)

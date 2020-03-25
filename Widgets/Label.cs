@@ -2,17 +2,27 @@ namespace GUIPanels
 {
   public class Label : Widget
   {
-    public virtual string Title { get; set; }
-    public virtual string Value
+    public virtual string Title { get { return _getValueCallback == null ? _title : _getValueCallback(); } set { _title = value; } }
+
+    string _title;
+
+    System.Func<string> _getValueCallback;
+    public Label(string title = "")
     {
-      get { return Title; }
-      set { Title = value; }
+      _title = title;
     }
 
-    public Label(string title)
+    public Label SetValueCallback(System.Func<string> getValueCallback)
     {
-      Title = title;
+      _getValueCallback = getValueCallback;
+      return this;
     }
+
+    public Label(System.Func<string> getValueCallback)
+    {
+      _getValueCallback = getValueCallback;
+    }
+
     protected override float ContentHeight
     {
       get

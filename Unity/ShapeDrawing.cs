@@ -4,6 +4,106 @@ namespace GUIPanels.Unity
 {
   public partial class Renderer
   {
+    bool _immediateMode = false;
+    public override bool ImmediateMode
+    {
+      get { return _immediateMode; }
+      set { _immediateMode = value; }
+    }
+
+    bool _setPassInvalidated = true;
+
+    public void SetPass2(int _ = 0)
+    {
+      RenderMaterial.SetPass(_);
+    }
+
+     void SetPass(int _ = 0)
+    {
+      if (!ImmediateMode) { return; }
+      if (_setPassInvalidated)
+      {
+        _setPassInvalidated = false;
+        RenderMaterial.SetPass(_);
+      }
+    }
+
+    void GLBegin(int state)
+    {
+      if (!ImmediateMode) { return; }
+      GL.Begin(state);
+    }
+
+    void GLEnd()
+    {
+      if (!ImmediateMode) { return; }
+      GL.End();
+    }
+
+    void GLColor(Color color)
+    {
+      if (!ImmediateMode)
+      {
+        Rendering.UIRenderer.CurrentShape.Add(
+          new DrawingState.ShapeData(color.r, color.g, color.b, color.a));
+        return;
+      }
+      GL.Color(color);
+    }
+
+    void Vertex3(float x, float y, float z = -10)
+    {
+      if (!ImmediateMode)
+      {
+        Rendering.UIRenderer.CurrentShape.Add(
+          new DrawingState.ShapeData(x, y, z, -1));
+        return;
+      }
+      GL.Vertex3(x, y, z);
+    }
+
+    public override void DrawTexture(Rectangle rectangle, Texture texture)
+    {
+      _setPassInvalidated = true;
+      var t = (texture as UnityTexture).Tex;
+      if (t == null)
+      {
+        return;
+      }
+
+      if (!ImmediateMode)
+      {
+        Rendering.UIRenderer.CurrentText.Add(new DrawingState.ContentData()
+        {
+          rectangle = rectangle,
+          texture = texture
+        });
+        return;
+      }
+
+      GUI.DrawTexture(Utils.ToRect(rectangle), t);
+    }
+
+    public override void DrawText(Rectangle rectangle, string text, ElementStyle style)
+    {
+      _setPassInvalidated = true;
+      Utils.CurrentStyle.FontSize = style.Get<float>(Styles.FontSize);
+      Utils.CurrentStyle.FontColor = style.Get<Col>(Styles.FontColor);
+
+      if (!ImmediateMode)
+      {
+        Rendering.UIRenderer.CurrentText.Add(new DrawingState.ContentData()
+        {
+          rectangle = rectangle,
+          text = text,
+          style = style
+        });
+        return;
+      }
+      GUI.Label(Utils.ToRect(rectangle), text, Utils.CurrentStyle.GUIStyle);
+    }
+
+
     Material _material;
     Material RenderMaterial
     {
@@ -29,21 +129,17 @@ namespace GUIPanels.Unity
       }
     }
 
-    void Vertex3(float x, float y, float z = -10)
-    {
-      GL.Vertex3(x, y, z);
-    }
 
     public override void BeginTriangleShape(Col color)
     {
       SetPass(0);
       // Draw lines
-      GL.Begin(GL.TRIANGLES);
-      GL.Color(color);
+      GLBegin(GL.TRIANGLES);
+      GLColor(color);
     }
     public override void EndShape()
     {
-      GL.End();
+      GLEnd();
     }
     public override void AddVertex(float x, float y, float z)
     {
@@ -56,13 +152,13 @@ namespace GUIPanels.Unity
       var rectangle = Utils.ToRect(rect);
       SetPass(0);
       // Draw lines
-      GL.Begin(GL.TRIANGLES);
-      GL.Color(color);
+      GLBegin(GL.TRIANGLES);
+      GLColor(color);
       Vertex3(rectangle.x, rectangle.y);
       Vertex3(rectangle.x + rectangle.width, rectangle.y);
       Vertex3(rectangle.x + 0.5f * rectangle.width,
         rectangle.y + rectangle.height);
-      GL.End();
+      GLEnd();
     }
 
     public override void DrawTriangle(Vec2 a, Vec2 b, Vec2 c, Col color)
@@ -72,12 +168,12 @@ namespace GUIPanels.Unity
       c = Aspect.Adjust(c);
       SetPass(0);
       // Draw lines
-      GL.Begin(GL.TRIANGLES);
-      GL.Color(color);
+      GLBegin(GL.TRIANGLES);
+      GLColor(color);
       Vertex3(a.x, a.y);
       Vertex3(b.x, b.y);
       Vertex3(c.x, c.y);
-      GL.End();
+      GLEnd();
     }
 
     public override void DrawLineBox(Rectangle rect, float width, Col color)
@@ -116,8 +212,8 @@ namespace GUIPanels.Unity
       CircleResolution = res;
 
       SetPass(0);
-      GL.Begin(GL.TRIANGLES);
-      GL.Color(color);
+      GLBegin(GL.TRIANGLES);
+      GLColor(color);
 
       if (isRounded)
       {
@@ -133,50 +229,10 @@ namespace GUIPanels.Unity
       Vertex3(end1.x, end1.y);
       Vertex3(start1.x, start1.y);
 
-      GL.End();
-    }
-
-    string _passName = "";
-    void SetPass(int _ = 0)
-    {
-      // if (_passName == "")
-      // {
-      //   _passName = RenderMaterial.GetPassName(_);
-      // }
-      // if (!RenderMaterial.GetShaderPassEnabled(_passName))
-      // {
-      //   RenderMaterial.SetPass(_);
-      // }
-      if (_setPassInvalidated)
-      {
-
-        _setPassInvalidated = false;
-        RenderMaterial.SetPass(_);
-      }
-
-    }
-    bool _setPassInvalidated = true;
-
-    public override void DrawTexture(Rectangle rectangle, Texture texture)
-    {
-      _setPassInvalidated = true;
-      var t = (texture as UnityTexture).Tex;
-      if (t == null)
-      {
-        return;
-      }
-      GUI.DrawTexture(Utils.ToRect(rectangle), t);
+      GLEnd();
     }
 
 
-
-    public override void DrawText(Rectangle rectangle, string text, ElementStyle style)
-    {
-      _setPassInvalidated = true;
-      Utils.CurrentStyle.FontSize = style.Get<float>(Styles.FontSize);
-      Utils.CurrentStyle.FontColor = style.Get<Col>(Styles.FontColor);
-      GUI.Label(Utils.ToRect(rectangle), text, Utils.CurrentStyle.GUIStyle);
-    }
 
     public override void DrawArc(Vec2 center, float radius, float startAngle, float endAngle, Col color)
     {
@@ -196,8 +252,8 @@ namespace GUIPanels.Unity
       float incr = (endAngle - angle) / (float)CircleResolution;
 
       SetPass(0);
-      GL.Begin(GL.TRIANGLES);
-      GL.Color(color);
+      GLBegin(GL.TRIANGLES);
+      GLColor(color);
 
       while (angle < endAngle)
       {
@@ -211,7 +267,7 @@ namespace GUIPanels.Unity
         angle += incr;
       }
 
-      GL.End();
+      GLEnd();
     }
 
     void DrawCircleCommands(Vec2 center, float radius, Col color)
@@ -238,10 +294,10 @@ namespace GUIPanels.Unity
       radius = Aspect.Adjust(radius);
 
       SetPass(0);
-      GL.Begin(GL.TRIANGLES);
-      GL.Color(color);
+      GLBegin(GL.TRIANGLES);
+      GLColor(color);
       DrawCircleCommands(center, radius, color);
-      GL.End();
+      GLEnd();
     }
 
     public override void DrawRing(Vec2 center, float radius, float innerRadius, Col color)
@@ -276,8 +332,8 @@ namespace GUIPanels.Unity
       }
 
       SetPass(0);
-      GL.Begin(GL.TRIANGLES);
-      GL.Color(color);
+      GLBegin(GL.TRIANGLES);
+      GLColor(color);
 
       startAngle *= DEG2RAD;
       float angle = startAngle;
@@ -301,7 +357,7 @@ namespace GUIPanels.Unity
 
         angle += incr;
       }
-      GL.End();
+      GLEnd();
     }
 
     public override void DrawRect(Rectangle rectangle1, Col color)
@@ -309,8 +365,8 @@ namespace GUIPanels.Unity
       var rectangle = Utils.ToRect(rectangle1);
       SetPass(0);
       // Draw lines
-      GL.Begin(GL.TRIANGLES);
-      GL.Color(color);
+      GLBegin(GL.TRIANGLES);
+      GLColor(color);
       Vertex3(rectangle.x, rectangle.y);
       Vertex3(rectangle.x + rectangle.width, rectangle.y);
       Vertex3(rectangle.x, rectangle.y + rectangle.height);
@@ -318,7 +374,7 @@ namespace GUIPanels.Unity
       Vertex3(rectangle.x + rectangle.width, rectangle.y);
       Vertex3(rectangle.x + rectangle.width, rectangle.y + rectangle.height);
       Vertex3(rectangle.x, rectangle.y + rectangle.height);
-      GL.End();
+      GLEnd();
     }
   }
 }

@@ -13,14 +13,24 @@ namespace GUIPanels
     State EventState { get { return _state; } }
     State _state = State.Idle;
 
+    public float AspectScale = 1f;
+
     public Widget()
     {
+      AspectScale = Aspect.Scale;
       _style = new ElementStyle(this);
       Style.Set(Styles.BackgroundColor, new Col(0, 0, 0, 0));
       // TODO set default styles
       Style.Set(Styles.Padding, Dim.Zero);
       Style.Set(Styles.Margin, Dim.Zero);
       Style.Set(Styles.Border, Dim.Zero);
+    }
+
+    public Widget AddToDrawQueue()
+    {
+      Rendering.SetImmediateMode(false);
+      Rendering.UIRenderer.AddWidget(this);
+      return this;
     }
 
     public static T New<T>(params object[] list)

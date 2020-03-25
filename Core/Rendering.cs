@@ -2,6 +2,40 @@ namespace GUIPanels
 {
   public static class Rendering
   {
+    static IUIRenderer _uiRenderer;
+    public static IUIRenderer UIRenderer
+    {
+      get
+      {
+        if (_uiRenderer == null)
+        {
+          _uiRenderer = UnityEngine.GameObject.FindObjectOfType<UIRenderer>();
+          if (_uiRenderer == null)
+          {
+            _uiRenderer = new UnityEngine.GameObject("_uiRenderer")
+              .AddComponent<UIRenderer>();
+          }
+        }
+        return _uiRenderer;
+      }
+    }
+
+
+    public static void SetImmediateMode(bool value)
+    {
+      Renderer.Current.ImmediateMode = value;
+    }
+
+    public static void PushZ()
+    {
+      UIRenderer.PushZ();
+    }
+
+    public static void PopZ()
+    {
+      UIRenderer.PopZ();
+    }
+
     public static void BeginTriangleShape(Col color)
     {
       Renderer.Current.BeginTriangleShape(color);
@@ -65,6 +99,7 @@ namespace GUIPanels
   }
   public abstract class Renderer
   {
+    public abstract bool ImmediateMode { get; set; }
     public abstract void BeginTriangleShape(Col color);
     public abstract void EndShape();
     public abstract void AddVertex(float x, float y, float z);

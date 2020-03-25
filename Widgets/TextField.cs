@@ -2,12 +2,13 @@ namespace GUIPanels
 {
   public class TextField : VerticalLayout
   {
+    public Widget TextFieldLabel { get { return _textFieldLabel2; } }
+    public HorizontalGrid TextFieldBox { get { return _horizontalGrid; } }
     public Col PrimaryColor = Col.white;
     public Col SecondaryColor = Col.black;
     ValueComponent<string> _valueComponent;
-    public HorizontalGrid TextFieldBox { get { return _horizontalGrid; } }
     HorizontalGrid _horizontalGrid;
-    Label _textFieldLabel;
+    Label _textFieldLabel, _textFieldLabel2;
     public string Value
     {
       get
@@ -23,7 +24,7 @@ namespace GUIPanels
     public TextField(string title, System.Func<string> getValueCallback = null, System.Action<string> setValueCallback = null)
     {
       _valueComponent = new ValueComponent<string>(getValueCallback, setValueCallback);
-      AddChild(new Label(title));
+      AddChild(_textFieldLabel2 = new Label(title));
       _horizontalGrid = new HorizontalGrid();
       _textFieldLabel = new Label(getValueCallback != null ? getValueCallback() : "");
       _horizontalGrid.Attach(_textFieldLabel);

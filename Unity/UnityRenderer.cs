@@ -18,12 +18,11 @@ namespace GUIPanels
       _previousFrameCount = UnityEngine.Time.frameCount;
       return o;
     }
-
+    public static Unity.UnityStyle CurrentStyle = new Unity.UnityStyle();
     public static Vec2 CalcSize(string text, ElementStyle style)
     {
-      Style s = style;
-      var unityStyle = s as Unity.UnityStyle;
-      return unityStyle.GUIStyle.CalcSize(new GUIContent(text)) / Aspect.Scale;
+      CurrentStyle.FontSize = style.Get<float>(Styles.FontSize);
+      return CurrentStyle.GUIStyle.CalcSize(new GUIContent(text)) / Aspect.Scale;
     }
     public static Col HSVToRGB(float h, float s, float v)
     {
@@ -199,21 +198,6 @@ namespace GUIPanels
     }
     public partial class Renderer : GUIPanels.Renderer
     {
-      public override void DrawTexture(Rectangle rectangle, Texture texture)
-      {
-        var t = (texture as UnityTexture).Tex;
-        if (t == null)
-        {
-          return;
-        }
-        GUI.DrawTexture(Utils.ToRect(rectangle), t);
-      }
-
-      public override void DrawText(Rectangle rectangle, string text, Style style)
-      {
-        var st = style as UnityStyle;
-        GUI.Label(Utils.ToRect(rectangle), text, st.GUIStyle);
-      }
     }
   }
 }

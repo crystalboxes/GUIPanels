@@ -1,7 +1,8 @@
 namespace GUIPanels
 {
-  public class ToggleBase : HorizontalGrid
+  public class ToggleBase : HorizontalLayout
   {
+    public Widget ToggleButton { get { return _filled; } }
     Col _primaryColor = Col.white, _secondaryColor = Col.black;
     public Col PrimaryColor
     {
@@ -17,17 +18,31 @@ namespace GUIPanels
         _filled.Style.Set(Styles.BorderColor, _secondaryColor);
       }
     }
+    public ToggleBase SetToggleSize(float size)
+    {
+      _initialized = false;
+      _toggleSize = size;
+      return this;
+    }
+    float _toggleSize = -1;
     protected EmptySpace _filled;
+    Label _label;
     public ToggleBase(string title) : base()
     {
-      var horizontal = new HorizontalLayout();
+      // var horizontal = new HorizontalLayout();
       _filled = new EmptySpace();
       _filled.Style.Set(Styles.Border, new Dim(2));
-      horizontal.Attach(_filled, new Label(title));
       _filled.Style.Set(Styles.Margin, Dim.right * 5);
-      AddChild(horizontal);
+      /* horizontal. */
+      Attach(_filled, _label = new Label(title));
+      // AddChild(horizontal);
 
       Theme.Current.Apply(this, typeof(ToggleBase));
+    }
+    public ToggleBase SetLabelHidden(bool value = true)
+    {
+      _label.Style.SetHidden(value);
+      return this;
     }
 
     bool _initialized = false;
@@ -35,6 +50,11 @@ namespace GUIPanels
     {
       if (!_initialized)
       {
+        if (_toggleSize > 0)
+        {
+          CurrentStyle.FontSize(_toggleSize);
+          _toggleSize = -1;
+        }
         _filled.Width = _filled.Height = Utils.CalcSize("a", CurrentStyle).y;
         _initialized = true;
       }

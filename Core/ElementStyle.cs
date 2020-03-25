@@ -16,6 +16,7 @@ namespace GUIPanels
     public static string Position { get { return "position"; } }
     public static string Width { get { return "width"; } }
     public static string Height { get { return "height"; } }
+    public static string Outline { get { return "outline"; } }
   }
   public enum HorizontalAlignment { Center, Left, Right }
   public struct FontStyle
@@ -23,39 +24,53 @@ namespace GUIPanels
     public Col Color;
     public float Size;
   }
-
-  public class ElementStyleBase
+  public struct Outline
   {
-    public ElementStyleBase SetHidden(bool value = true)
+    public Col Color;
+    public float Width;
+  }
+
+  public class ElementStyle
+  {
+    public ElementStyle SetHidden(bool value = true)
     {
       Set(Styles.Hidden, value);
       return this;
     }
-    public ElementStyleBase FontColor(Col color)
+    public Col FontColor()
+    {
+      return Get<Col>(Styles.FontColor);
+    }
+    public ElementStyle FontColor(Col color)
     {
       Set(Styles.FontColor, color);
       return this;
     }
 
-    public ElementStyleBase FontSize(float size)
+    public float FontSize()
+    {
+      return Get<float>(Styles.FontSize);
+    }
+    public ElementStyle FontSize(float size)
     {
       Set(Styles.FontSize, size);
       return this;
     }
 
-    public ElementStyleBase Font(FontStyle style)
+    public ElementStyle Font(FontStyle style)
     {
       Set(Styles.FontColor, style.Color);
       Set(Styles.FontSize, style.Size);
       return this;
     }
 
-    public ElementStyleBase Font(float size)
+    public ElementStyle Font(float size)
     {
-      return Font(size, Col.black);
+      Set(Styles.FontSize, size);
+      return this;
     }
 
-    public ElementStyleBase Font(float size, Col color)
+    public ElementStyle Font(float size, Col color)
     {
       Set(Styles.FontColor, color);
       Set(Styles.FontSize, size);
@@ -63,51 +78,61 @@ namespace GUIPanels
     }
 
     public Vec2 Position() { return Get<Vec2>(Styles.Position); }
-    public ElementStyleBase Position(Vec2 pos)
+    public ElementStyle Position(Vec2 pos)
     {
       Set(Styles.Position, pos);
       return this;
     }
-    public ElementStyleBase Position(float x, float y)
+    public ElementStyle Position(float x, float y)
     {
       Set(Styles.Position, new Vec2(x, y));
       return this;
     }
 
     public Col Background() { return Get<Col>(Styles.BackgroundColor); }
-    public ElementStyleBase Background(Col color)
+    public ElementStyle Background(Col color)
     {
       Set(Styles.BackgroundColor, color);
       return this;
     }
 
+    public ElementStyle Outline(float width, Col color)
+    {
+      Set<Outline>(Styles.Outline, new GUIPanels.Outline() { Width = width, Color = color });
+      return this;
+    }
+    public GUIPanels.Outline Outline()
+    {
+      return Get<GUIPanels.Outline>(Styles.Outline);
+    }
+
     public Dim Padding() { return Get<Dim>(Styles.Padding); }
-    public ElementStyleBase Padding(float dim) { Set(Styles.Padding, new Dim(dim)); return this; }
-    public ElementStyleBase Padding(Dim dim) { Set(Styles.Padding, dim); return this; }
-    public ElementStyleBase Padding(float top, float leftRight, float bottom) { Set(Styles.Padding, new Dim(top, leftRight, bottom)); return this; }
-    public ElementStyleBase Padding(float topBottom, float leftRight) { Set(Styles.Padding, new Dim(topBottom, leftRight)); return this; }
+    public ElementStyle Padding(float dim) { Set(Styles.Padding, new Dim(dim)); return this; }
+    public ElementStyle Padding(Dim dim) { Set(Styles.Padding, dim); return this; }
+    public ElementStyle Padding(float top, float leftRight, float bottom) { Set(Styles.Padding, new Dim(top, leftRight, bottom)); return this; }
+    public ElementStyle Padding(float topBottom, float leftRight) { Set(Styles.Padding, new Dim(topBottom, leftRight)); return this; }
 
     public Dim Margin() { return Get<Dim>(Styles.Margin); }
-    public ElementStyleBase Margin(Dim dim) { Set(Styles.Margin, dim); return this; }
-    public ElementStyleBase Margin(float dim) { Set(Styles.Margin, new Dim(dim)); return this; }
-    public ElementStyleBase Margin(float top, float leftRight, float bottom) { Set(Styles.Margin, new Dim(top, leftRight, bottom)); return this; }
-    public ElementStyleBase Margin(float topBottom, float leftRight) { Set(Styles.Margin, new Dim(topBottom, leftRight)); return this; }
+    public ElementStyle Margin(Dim dim) { Set(Styles.Margin, dim); return this; }
+    public ElementStyle Margin(float dim) { Set(Styles.Margin, new Dim(dim)); return this; }
+    public ElementStyle Margin(float top, float leftRight, float bottom) { Set(Styles.Margin, new Dim(top, leftRight, bottom)); return this; }
+    public ElementStyle Margin(float topBottom, float leftRight) { Set(Styles.Margin, new Dim(topBottom, leftRight)); return this; }
 
     public Dim Border() { return Get<Dim>(Styles.Border); }
     public Col BorderColor() { return Get<Col>(Styles.BorderColor); }
-    public ElementStyleBase Border(float dim, Col color)
+    public ElementStyle Border(float dim, Col color)
     {
       Set(Styles.Border, new Dim(dim));
       Set(Styles.BorderColor, color);
       return this;
     }
-    public ElementStyleBase Border(Col color, float dim = 1)
+    public ElementStyle Border(Col color, float dim = 1)
     {
       Set(Styles.Border, new Dim(dim));
       Set(Styles.BorderColor, color);
       return this;
     }
-    public ElementStyleBase Border(Col color, Dim dim)
+    public ElementStyle Border(Col color, Dim dim)
     {
       Set(Styles.Border, dim);
       Set(Styles.BorderColor, color);
@@ -115,9 +140,9 @@ namespace GUIPanels
     }
 
     ////////////////////////
-    ElementStyleBase _baseStyle;
-    ElementStyleBase _clicked, _hovered;
-    public ElementStyleBase Clicked
+    ElementStyle _baseStyle;
+    ElementStyle _clicked, _hovered;
+    public ElementStyle Clicked
     {
       get
       {
@@ -134,7 +159,7 @@ namespace GUIPanels
       }
     }
 
-    public ElementStyleBase Hovered
+    public ElementStyle Hovered
     {
       get
       {
@@ -152,12 +177,12 @@ namespace GUIPanels
     }
 
     /////////////
-    public ElementStyleBase(Widget owner)
+    public ElementStyle(Widget owner)
     {
       Owner = owner;
     }
     public Widget Owner { get; set; }
-    protected ElementStyleBase ParentStyle
+    protected ElementStyle ParentStyle
     {
       get
       {
@@ -170,7 +195,7 @@ namespace GUIPanels
       }
     }
     Dictionary<string, object> _properties = new Dictionary<string, object>();
-    public virtual ElementStyleBase Set<T>(string propName, T value)
+    public virtual ElementStyle Set<T>(string propName, T value)
     {
       _properties[propName] = value;
       return this;
@@ -201,75 +226,13 @@ namespace GUIPanels
       }
       catch (System.InvalidCastException e)
       {
-        UnityEngine.Debug.Log("Warning: wrong type");
+        UnityEngine.Debug.LogFormat("Warning: wrong type {0}", e);
       }
       return default(T);
     }
     public bool Exists(string propName)
     {
       return _properties.ContainsKey(propName);
-    }
-  }
-  public class ElementStyle : ElementStyleBase
-  {
-    public ElementStyle(Widget owner) : base(owner)
-    {
-    }
-    public static implicit operator Style(ElementStyle style)
-    {
-      return style.FontStyle;
-    }
-
-    public override ElementStyleBase Set<T>(string propName, T value)
-    {
-      base.Set(propName, value);
-      if (propName == Styles.FontSize)
-      {
-        if (_fontStyle == null) _fontStyle = MakeFontStyle();
-        object val = value;
-        _fontStyle.FontSize = (float)val;
-      }
-
-      if (propName == Styles.FontColor)
-      {
-        if (_fontStyle == null) _fontStyle = MakeFontStyle();
-        object val = value;
-        _fontStyle.FontColor = (Col)val;
-      }
-      return this;
-    }
-
-    Style MakeFontStyle()
-    {
-      var fontStyle = Utils.MakeStyle();
-      fontStyle.FontColor = Get<Col>(Styles.FontColor);
-      fontStyle.FontSize = Get<float>(Styles.FontSize);
-      return fontStyle;
-    }
-
-    // this is specific to font rendering
-    Style _fontStyle;
-    public Style FontStyle
-    {
-      get
-      {
-        if (_fontStyle == null)
-        {
-          if (Exists(Styles.FontColor) && Exists(Styles.FontSize))
-          {
-            _fontStyle = MakeFontStyle();
-          }
-          else if (ParentStyle != null)
-          {
-            return (ParentStyle as ElementStyle).FontStyle;
-          }
-          else
-          {
-            return null;
-          }
-        }
-        return _fontStyle;
-      }
     }
   }
 }

@@ -1,5 +1,33 @@
+using System;
+
 namespace GUIPanels
 {
+  public class ButtonToggle : Button
+  {
+    public override ElementStyle CurrentStyle
+    {
+      get { return Value ? base.Style.Clicked : base.CurrentStyle; }
+    }
+
+    ValueComponent<bool> _valueComponent;
+    public bool Value
+    {
+      get { return _valueComponent != null ? _valueComponent.Value : default(bool); }
+      set { _valueComponent.Value = value; }
+    }
+    public ButtonToggle(string title,
+      Func<bool> getValueCallback, Action<bool> setValueCallback) : base(title, null)
+    {
+      _valueComponent = new ValueComponent<bool>(getValueCallback, setValueCallback);
+      SetOnClickCallback(() =>
+      {
+        Value = !Value;
+      });
+
+      Theme.Current.Apply(this, typeof(Button));
+    }
+  }
+
   public class Button : VerticalLayout
   {
     public Label Label { get { return _label; } }
@@ -20,6 +48,12 @@ namespace GUIPanels
       AddChild(new EmptySpace(0, size.y));
     }
 
+    public Button SetOnClickCallback(Action onClickCallback)
+    {
+      _onClickCallback = onClickCallback;
+      return this;
+    }
+
     protected override void OnDraggingStart(float x, float y)
     {
       base.OnDraggingStart(x, y);
@@ -28,7 +62,7 @@ namespace GUIPanels
     protected override void OnMouseUp()
     {
       base.OnMouseUp();
-      if (_clicked)
+      if (_clicked && _onClickCallback != null)
       {
         _onClickCallback();
       }

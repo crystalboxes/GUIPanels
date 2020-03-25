@@ -34,10 +34,27 @@ namespace GUIPanels.Unity
       GL.Vertex3(x, y, z);
     }
 
+    public override void BeginTriangleShape(Col color)
+    {
+      SetPass(0);
+      // Draw lines
+      GL.Begin(GL.TRIANGLES);
+      GL.Color(color);
+    }
+    public override void EndShape()
+    {
+      GL.End();
+    }
+    public override void AddVertex(float x, float y, float z)
+    {
+      Vertex3(x, y, z);
+    }
+
+
     public override void DrawTriangle(Rectangle rect, Col color)
     {
       var rectangle = Utils.ToRect(rect);
-      RenderMaterial.SetPass(0);
+      SetPass(0);
       // Draw lines
       GL.Begin(GL.TRIANGLES);
       GL.Color(color);
@@ -53,7 +70,7 @@ namespace GUIPanels.Unity
       a = Aspect.Adjust(a);
       b = Aspect.Adjust(b);
       c = Aspect.Adjust(c);
-      RenderMaterial.SetPass(0);
+      SetPass(0);
       // Draw lines
       GL.Begin(GL.TRIANGLES);
       GL.Color(color);
@@ -63,7 +80,19 @@ namespace GUIPanels.Unity
       GL.End();
     }
 
-    public override void DrawLine(Vec2 p0, Vec2 p1, float width, Col color)
+    public override void DrawLineBox(Rectangle rect, float width, Col color)
+    {
+      var pos = rect.Position;
+      var dim = rect.Size;
+      var a = pos; var b = a + new Vec2(dim.x, 0);
+      var c = b + new Vec2(0, dim.y); var d = a + new Vec2(0, dim.y);
+      Rendering.DrawLine(a + new Vec2(width * 0.5f, 0), b - new Vec2(width * 0.5f, 0), width, color);
+      Rendering.DrawLine(b, c, width, color);
+      Rendering.DrawLine(c - new Vec2(width * 0.5f, 0), d + new Vec2(width * 0.5f, 0), width, color);
+      Rendering.DrawLine(d, a, width, color);
+    }
+
+    public override void DrawLine(Vec2 p0, Vec2 p1, float width, Col color, bool isRounded)
     {
       p0 = Aspect.Adjust(p0);
       p1 = Aspect.Adjust(p1);
@@ -86,12 +115,15 @@ namespace GUIPanels.Unity
       CircleResolution = 8;
       CircleResolution = res;
 
-      RenderMaterial.SetPass(0);
+      SetPass(0);
       GL.Begin(GL.TRIANGLES);
       GL.Color(color);
 
-      DrawCircleCommands(p0, halfWidth, color);
-      DrawCircleCommands(p1, halfWidth, color);
+      if (isRounded)
+      {
+        DrawCircleCommands(p0, halfWidth, color);
+        DrawCircleCommands(p1, halfWidth, color);
+      }
 
       Vertex3(start0.x, start0.y);
       Vertex3(end0.x, end0.y);
@@ -102,6 +134,48 @@ namespace GUIPanels.Unity
       Vertex3(start1.x, start1.y);
 
       GL.End();
+    }
+
+    string _passName = "";
+    void SetPass(int _ = 0)
+    {
+      // if (_passName == "")
+      // {
+      //   _passName = RenderMaterial.GetPassName(_);
+      // }
+      // if (!RenderMaterial.GetShaderPassEnabled(_passName))
+      // {
+      //   RenderMaterial.SetPass(_);
+      // }
+      if (_setPassInvalidated)
+      {
+
+        _setPassInvalidated = false;
+        RenderMaterial.SetPass(_);
+      }
+
+    }
+    bool _setPassInvalidated = true;
+
+    public override void DrawTexture(Rectangle rectangle, Texture texture)
+    {
+      _setPassInvalidated = true;
+      var t = (texture as UnityTexture).Tex;
+      if (t == null)
+      {
+        return;
+      }
+      GUI.DrawTexture(Utils.ToRect(rectangle), t);
+    }
+
+
+
+    public override void DrawText(Rectangle rectangle, string text, ElementStyle style)
+    {
+      _setPassInvalidated = true;
+      Utils.CurrentStyle.FontSize = style.Get<float>(Styles.FontSize);
+      Utils.CurrentStyle.FontColor = style.Get<Col>(Styles.FontColor);
+      GUI.Label(Utils.ToRect(rectangle), text, Utils.CurrentStyle.GUIStyle);
     }
 
     public override void DrawArc(Vec2 center, float radius, float startAngle, float endAngle, Col color)
@@ -121,7 +195,7 @@ namespace GUIPanels.Unity
       endAngle = endAngle * DEG2RAD;
       float incr = (endAngle - angle) / (float)CircleResolution;
 
-      RenderMaterial.SetPass(0);
+      SetPass(0);
       GL.Begin(GL.TRIANGLES);
       GL.Color(color);
 
@@ -163,7 +237,7 @@ namespace GUIPanels.Unity
       center = Aspect.Adjust(center);
       radius = Aspect.Adjust(radius);
 
-      RenderMaterial.SetPass(0);
+      SetPass(0);
       GL.Begin(GL.TRIANGLES);
       GL.Color(color);
       DrawCircleCommands(center, radius, color);
@@ -201,7 +275,7 @@ namespace GUIPanels.Unity
         ri = r - (ri - r);
       }
 
-      RenderMaterial.SetPass(0);
+      SetPass(0);
       GL.Begin(GL.TRIANGLES);
       GL.Color(color);
 
@@ -233,7 +307,7 @@ namespace GUIPanels.Unity
     public override void DrawRect(Rectangle rectangle1, Col color)
     {
       var rectangle = Utils.ToRect(rectangle1);
-      RenderMaterial.SetPass(0);
+      SetPass(0);
       // Draw lines
       GL.Begin(GL.TRIANGLES);
       GL.Color(color);

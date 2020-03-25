@@ -4,7 +4,7 @@ namespace GUIPanels
 {
   public enum EventType
   {
-    Click, DoubleClick, MouseUp
+    Click, DoubleClick, MouseUp, MouseDown, Hover
   }
   public abstract class Widget
   {
@@ -89,7 +89,7 @@ namespace GUIPanels
           _position = value;
         }
         Style.Set<Vec2>(Styles.Position, Position);
-        Recalculate();
+        RecalculateBox();
       }
     }
 
@@ -140,7 +140,7 @@ namespace GUIPanels
     Rectangle _contentBox, _box;
     float _innerWidth, _innerHeight;
 
-    void Recalculate()
+    public void RecalculateBox()
     {
       _position = CurrentStyle.Position();
       _margin = CurrentStyle.Get<Dim>(Styles.Margin);
@@ -195,7 +195,12 @@ namespace GUIPanels
     ElementStyle _style;
 
     public ElementStyle Style { get { return _style; } }
-    public ElementStyle CurrentStyle
+    public Widget SetStyle(ElementStyle style)
+    {
+      _style = style;
+      return this;
+    }
+    public virtual ElementStyle CurrentStyle
     {
       get
       {
@@ -220,7 +225,7 @@ namespace GUIPanels
       Theme.Current.Apply(this);
       ApplyChildStyles();
       _isThemeApplied = true;
-      Recalculate();
+      RecalculateBox();
     }
 
     public void Draw()
@@ -235,7 +240,7 @@ namespace GUIPanels
         return;
       }
 
-      Recalculate();
+      RecalculateBox();
 
       // update all events
       UpdateEvents();
@@ -246,7 +251,11 @@ namespace GUIPanels
       contentBox.width += _padding.Left + _padding.Right;
       contentBox.x -= _padding.Left;
       contentBox.y -= _padding.Top;
-      Rendering.DrawRect(contentBox, CurrentStyle.Get<Col>(Styles.BackgroundColor));
+      var bg = CurrentStyle.Get<Col>(Styles.BackgroundColor);
+      if (bg.a > 0.001f)
+      {
+        Rendering.DrawRect(contentBox, bg);
+      }
 
       // Draw border
       var borderColor = CurrentStyle.Get<Col>(Styles.BorderColor);
@@ -287,6 +296,12 @@ namespace GUIPanels
         {
           drawable.DeferRender();
         }
+      }
+
+      if (CurrentStyle.Exists(Styles.Outline))
+      {
+        var outline = CurrentStyle.Get<GUIPanels.Outline>(Styles.Outline);
+        Rendering.DrawLineBox(contentBox, outline.Width, outline.Color);
       }
 
       if (_shouldShowTooltip)
@@ -343,6 +358,8 @@ namespace GUIPanels
       var mousePos = Utils.MousePosition();
       if (Box.Contains(mousePos))
       {
+        DispatchEvents(EventType.Hover);
+
         _shouldShowTooltip = true;
         if (_tooltip != null)
         {
@@ -361,6 +378,7 @@ namespace GUIPanels
         if (Utils.GetMouseDown())
         {
           _state = State.Clicked;
+          DispatchEvents(EventType.MouseDown);
           OnDraggingStart(mousePos.x, mousePos.y);
           _mouseDownTime = Utils.Time;
         }

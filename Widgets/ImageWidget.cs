@@ -9,7 +9,18 @@ namespace GUIPanels
 
     protected Rectangle ImageBox
     {
-      get { return _fillsContentBox ? ContentBox : new Rectangle(ContentPosition.x, ContentPosition.y, ImageWidth, ImageHeight); }
+      get
+      {
+        if (_fillsContentBox) { return ContentBox; }
+        else
+        {
+          return new Rectangle(ContentPosition.x, ContentPosition.y, ImageWidth, ImageHeight);
+        }
+      }
+    }
+    protected override float ContentHeight
+    {
+      get { return _fillsContentBox ? _tex.Height * ContentWidth / _tex.Width : base.ContentHeight; }
     }
     protected float ImageWidth { get; set; }
     protected float ImageHeight { get; set; }
@@ -27,6 +38,7 @@ namespace GUIPanels
       }
 
       _tex = texture;
+      SetFillContentBox();
     }
 
     public ImageWidget SetFillContentBox(bool value = true)

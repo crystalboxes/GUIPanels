@@ -2,8 +2,7 @@ namespace GUIPanels
 {
   public class ValueLabel : Label, IValueComponent<string>
   {
-    public override string Title { get; set; }
-    public override string Value
+    public string Value
     {
       get { return _valueComponent.Value; }
       set { _valueComponent.Value = value; }
